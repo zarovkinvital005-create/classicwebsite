@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VitalHealth — врач на связи</title>
+<meta name="description" content="VitalHealth — платформа онлайн-приёмов у проверенных врачей клиник-партнёров.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300..700&display=swap">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#0b1512;overflow:hidden;font-family:Onest,Arial,sans-serif}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0}
+#stage section{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;isolation:isolate;opacity:0;visibility:hidden;transition:opacity .55s ease,visibility .55s}
+#stage section.on{opacity:1;visibility:visible}
+#stage div{display:flex;flex-direction:column}
+#stage h1,#stage h2,#stage h3,#stage p,#stage ul,#stage ol{margin:0}
+#stage h1{font-size:96px;font-weight:600;line-height:1.1}
+#stage h2{font-size:64px;font-weight:600;line-height:1.15}
+#stage h3{font-size:44px;font-weight:600;line-height:1.2}
+#stage p{font-size:32px;line-height:1.4}
+#stage svg,#stage iframe,#stage video,#stage img{display:block}
+#bar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:rgba(11,21,18,.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(242,251,246,.18);z-index:10;transition:opacity .4s}
+body.idle #bar{opacity:0}
+#bar button{width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:#F2FBF6;font:500 20px/1 Onest,Arial,sans-serif;cursor:pointer}
+#bar button:hover{background:rgba(242,251,246,.16)}
+#cnt{min-width:64px;text-align:center;color:#F2FBF6;font:500 15px/1 Onest,Arial,sans-serif}
+</style>
+</head>
+<body>
+<div id="stage">
+<section id="cover" data-transition="fade" style="background:#F2F5F1;color:#13241E;font-family:'Onest', Arial, sans-serif;padding:128px 128px 300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:44px">
+<iframe data-srcdoc="<!doctype html><html><head><meta charset=&quot;utf-8&quot;><style>html,body{margin:0;height:100%;overflow:hidden;background:#F2F5F1}canvas{position:absolute;left:0;top:0;width:100%;height:100%}#b{filter:blur(10px);opacity:.6}#v{position:absolute;inset:0;background:radial-gradient(ellipse 55% 40% at 50% 46%,rgba(242,245,241,.45) 0%,rgba(242,245,241,0) 70%),radial-gradient(ellipse at 50% 50%,rgba(242,245,241,0) 65%,rgba(242,245,241,.5) 100%)}</style></head><body><canvas id=&quot;b&quot;></canvas><canvas id=&quot;m&quot;></canvas><div id=&quot;v&quot;></div><script>
+(function(){
+var M=document.getElementById('m'),B=document.getElementById('b'),c=M.getContext('2d'),bc=B.getContext('2d');
+var L=16,MAX=4000,ST=1/60,TAU=Math.PI*2,AB=4,SPB=4;
+var KR=1-Math.exp(-ST/.12),KQ=1-Math.exp(-ST*8),KC=1-Math.exp(-ST*18),KV=1-Math.exp(-ST*10),FP=.03*ST,FD=Math.exp(-ST/.45);
+var PAL=[[16,185,129],[14,140,210],[4,110,80]],CORE=[8,48,36];
+var BA=[.55,.72,.9],BW=[1.2,1.5,1.9];
+var seed=7;function r(){seed=(seed+0x6d2b79f5)>>>0;var t=seed;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296}
+function wv(l,a,o,p,A){var k=TAU/l;return[k*Math.cos(a),k*Math.sin(a),o,p,A*Math.sin(a),-A*Math.cos(a)]}
+var WV=[wv(380,.35,.18,.7,16),wv(620,1.9,.27,2.1,13),wv(900,3.4,.35,4.2,10)];
+var px=new Float32Array(MAX),py=new Float32Array(MAX),vx=new Float32Array(MAX),vy=new Float32Array(MAX),pz=new Float32Array(MAX),v0=new Float32Array(MAX),qv=new Float32Array(MAX),fi=new Float32Array(MAX),ln=new Uint8Array(MAX),hx=new Float32Array(MAX*L),hy=new Float32Array(MAX*L);
+var G=[],GC=new Int32Array(6);for(var g=0;g<6;g++)G.push(new Int32Array(MAX));
+var SS=[],SW=[],HS=[];
+var W=1,H=1,D=1,S=1,bw=1,bh=1,head=0,t=0,N=0,cx=0,cy=0,pcx=0,pcy=0,vcx=0,vcy=0,A0=64,raf=0,last=0,acc=0,mx=0,my=0,mt=-99,TL=54,TX=new Float32Array(54),TY=new Float32Array(54),ti=0,tn=0;
+function mv(e){mx=e.clientX;my=e.clientY;mt=t}addEventListener('pointermove',mv);addEventListener('mousemove',mv);
+var reduced=window.matchMedia&amp;&amp;matchMedia('(prefers-reduced-motion: reduce)').matches;
+function cl(v,a,b){return v<a?a:v>b?b:v}
+function styles(){for(var g=0;g<6;g++){var d=g<3?0:1,b=g%3,k=PAL[b];for(var a=0;a<AB;a++){var f=Math.pow(1-(a+.5)/AB,1.5),al=Math.min(.95,BA[b]*(d?1:.7)*f*1.3);SS[g*AB+a]='rgba('+k[0]+','+k[1]+','+k[2]+','+al.toFixed(3)+')';SW[g*AB+a]=cl(BW[b]*(d?1:.8)*(1-.45*a/AB)*Math.max(1,S),.8,3)}}HS[0]='rgba('+CORE+',0.6)';HS[1]='rgba('+CORE+',0.9)'}
+function sp(i,u){var x=u?r()*W:-40+r()*(W+80),y=u?r()*H:-40-r()*80,z=.35+.65*r();pz[i]=z;v0[i]=(70+90*z*z)*S;ln[i]=8+Math.floor(r()*8);px[i]=x;py[i]=y;vx[i]=0;vy[i]=v0[i];qv[i]=1;fi[i]=0;var o=i*L;for(var k=0;k<L;k++){hx[o+k]=x;hy[o+k]=y}}
+function size(){var w=innerWidth||1920,h=innerHeight||1080,d=Math.min(devicePixelRatio||1,2);if(w*h*d*d>4.5e6)d=Math.sqrt(4.5e6/(w*h));W=w;H=h;D=d;S=H/1080;M.width=Math.round(W*D);M.height=Math.round(H*D);bw=Math.ceil(W/4);bh=Math.ceil(H/4);B.width=bw;B.height=bh;A0=70*S;N=cl(Math.round(W*H/(520*S*S)),800,4000);for(var i=0;i<N;i++)sp(i,true);styles()}
+function sim(){head=(head+1)%L;t+=ST;
+var u=t-mt<2.5,tx=u?mx:W*(.5+.32*Math.sin(.37*t)),ty=u?my:H*(.5+.28*Math.sin(.53*t+1.2));pcx=cx;pcy=cy;cx+=(tx-cx)*KC;cy+=(ty-cy)*KC;vcx+=((cx-pcx)/ST-vcx)*KV;vcy+=((cy-pcy)/ST-vcy)*KV;
+ti=(ti+1)%TL;TX[ti]=cx;TY[ti]=cy;if(tn<TL)tn++;
+var vm=Math.sqrt(vcx*vcx+vcy*vcy),a=A0+Math.min(vm*.025,36*S);
+var p0=WV[0][2]*t+WV[0][3],p1=WV[1][2]*t+WV[1][3],p2=WV[2][2]*t+WV[2][3],w0=WV[0],w1=WV[1],w2=WV[2];
+for(var i=0;i<N;i++){var x0=px[i],y0=py[i],z=pz[i],v=v0[i];
+var c0=Math.cos(w0[0]*x0+w0[1]*y0+p0),c1=Math.cos(w1[0]*x0+w1[1]*y0+p1),c2=Math.cos(w2[0]*x0+w2[1]*y0+p2);
+var fx=(w0[4]*c0+w1[4]*c1+w2[4]*c2)*z*S,fy=v+(w0[5]*c0+w1[5]*c1+w2[5]*c2)*z*S;
+var zf=.55+.45*z,aE=a*zf,rx=x0-cx,ry=y0-cy,d2=rx*rx+ry*ry,qx=0,qy=0,df=0;
+var Ux=-vcx,Uy=v-vcy,U=Math.sqrt(Ux*Ux+Uy*Uy);
+if(U>1e-3){if(U>900*S){var sc=900*S/U;Ux*=sc;Uy*=sc;U=900*S}var ex=Ux/U,ey=Uy/U,s=rx*ex+ry*ey,n=-rx*ey+ry*ex;
+if(s>0&amp;&amp;s<12*aE){var nn=n/(.9*aE+.2*s);df=.55*Math.exp(-s/(3*aE))*Math.exp(-nn*nn)}
+var nr=9*aE;if(d2<nr*nr){var r2=Math.max(s*s+n*n,aE*aE*.64),k=aE*aE/(r2*r2),ds=-U*k*(s*s-n*n),dn=-U*k*2*s*n,wn=1,inn=5*aE;if(d2>inn*inn){var tt=(Math.sqrt(d2)-inn)/(4*aE);wn=1-tt*tt*(3-2*tt)}qx=(ds*ex-dn*ey)*wn;qy=(ds*ey+dn*ex)*wn}}
+var kp=1-df;fx=fx*kp+qx;fy=fy*kp+qy;
+var ux=vx[i]+(fx-vx[i])*KR,uy=vy[i]+(fy-vy[i])*KR,s2=ux*ux+uy*uy,lim=900*S;if(s2>lim*lim){var q=lim/Math.sqrt(s2);ux*=q;uy*=q}
+var x=x0+ux*ST,y=y0+uy*ST,ox=x-cx,oy=y-cy,o2=ox*ox+oy*oy,lm=.98*aE;
+if(o2<lm*lm){var rr=Math.sqrt(o2),nx=rr<1e-3?0:ox/rr,ny=rr<1e-3?1:oy/rr;x=cx+nx*aE;y=cy+ny*aE;var vn=(ux-vcx)*nx+(uy-vcy)*ny;if(vn<0){ux-=vn*nx;uy-=vn*ny}}
+vx[i]=ux;vy[i]=uy;px[i]=x;py[i]=y;
+if(y>H+40||x<-120||x>W+120||y<-600){sp(i,false);continue}
+qv[i]+=(Math.sqrt(ux*ux+uy*uy)/v-qv[i])*KQ;
+if(r()<FP)fi[i]=1;else{var f=fi[i]*FD;fi[i]=f<.01?0:f}
+var sl=i*L+head;hx[sl]=x;hy[sl]=y}}
+function draw(){c.setTransform(D,0,0,D,0,0);c.clearRect(0,0,W,H);c.lineCap='round';c.lineJoin='round';
+GC.fill(0);for(var i=0;i<N;i++){var q=qv[i],b=q<1.25?0:q<1.85?1:2;if(fi[i]>.35&amp;&amp;b<2)b++;var g=(pz[i]<.62?0:3)+b;G[g][GC[g]++]=i}
+for(var g=0;g<6;g++){var cnt=GC[g];if(!cnt)continue;var Lg=G[g];for(var a=0;a<AB;a++){var k0=a*SPB,k1=k0+SPB;c.strokeStyle=SS[g*AB+a];c.lineWidth=SW[g*AB+a];c.beginPath();
+for(var j=0;j<cnt;j++){var i=Lg[j],sg=ln[i]-1;if(k0>=sg)continue;var o=i*L,ke=Math.min(k1,sg),ix=(head-k0+L)%L;c.moveTo(hx[o+ix],hy[o+ix]);for(var k=k0;k<ke;k++){ix=ix===0?L-1:ix-1;c.lineTo(hx[o+ix],hy[o+ix])}}c.stroke()}}
+for(var p=0;p<2;p++)for(var k=1;k<tn;k++){var ia=(ti-k+1+TL)%TL,ib=(ti-k+TL)%TL,f=1-k/tn;c.strokeStyle=p?'rgba(14,140,210,'+(.75*f).toFixed(3)+')':'rgba(16,185,129,'+(.32*f).toFixed(3)+')';c.lineWidth=(p?1.5+5*f:4+30*f)*S;c.beginPath();c.moveTo(TX[ia],TY[ia]);c.lineTo(TX[ib],TY[ib]);c.stroke()}
+var ph=head===0?L-1:head-1;c.lineWidth=1.4*Math.max(1,S);
+for(var d=0;d<2;d++){c.strokeStyle=HS[d];c.beginPath();for(var b=1;b<3;b++){var g=d*3+b,cnt=GC[g],Lg=G[g];for(var j=0;j<cnt;j++){var i=Lg[j];if(b===1&amp;&amp;fi[i]<=.5)continue;var o=i*L;c.moveTo(hx[o+head],hy[o+head]);c.lineTo(hx[o+ph],hy[o+ph])}}c.stroke()}
+bc.clearRect(0,0,bw,bh);bc.drawImage(M,0,0,bw,bh)}
+function frame(now){var dt=Math.max(0,now-last);last=now;acc+=Math.min(.05,dt/1000);var n=0;while(acc>=ST&amp;&amp;n<3){sim();acc-=ST;n++}if(n===3)acc=0;if(n)draw();raf=requestAnimationFrame(frame)}
+size();cx=pcx=W*.5;cy=pcy=H*.5;for(var s=0;s<150;s++)sim();draw();
+if(!reduced){last=performance.now();raf=requestAnimationFrame(frame);
+document.addEventListener('visibilitychange',function(){if(document.hidden)cancelAnimationFrame(raf);else{last=performance.now();raf=requestAnimationFrame(frame)}})}
+var rt;addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){size();draw()},120)});
+})();
+</script><script>addEventListener('message',function(e){var d=e.data;if(d&amp;&amp;d.vh)dispatchEvent(new MouseEvent('mousemove',{clientX:d.x,clientY:d.y}))})</script></body></html>" style="position:absolute;left:0px;top:0px;width:1920px;height:1080px;border:0" title="" scrolling="no"></iframe>
+<svg aria-label="Стеклянная лента в зелёных оттенках" width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" style="position:absolute;left:0;top:0;width:1920px;height:1080px"><defs><linearGradient id="cg" gradientUnits="userSpaceOnUse" x1="560" y1="1080" x2="1420" y2="560"><stop offset="0" stop-color="#E6F6EE"/><stop offset="0.3" stop-color="#5CD3A6"/><stop offset="0.55" stop-color="#2A9FC2"/><stop offset="0.78" stop-color="#B9F08C"/><stop offset="1" stop-color="#EAF8F0"/></linearGradient><filter id="cb1" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="30"/></filter><filter id="cb2" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="7"/></filter></defs><path d="M600 1120 C560 860 760 660 1060 612 C1330 570 1430 690 1290 870 C1220 960 1160 1030 1120 1120" fill="none" stroke="url(#cg)" stroke-width="170" stroke-linecap="round" opacity="0.35" filter="url(#cb1)"/><path d="M600 1120 C560 860 760 660 1060 612 C1330 570 1430 690 1290 870 C1220 960 1160 1030 1120 1120" fill="none" stroke="url(#cg)" stroke-width="64" stroke-linecap="round" opacity="0.9"/><path d="M612 1120 C574 870 770 674 1062 628 C1312 590 1404 700 1274 864" fill="none" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" opacity="0.7" filter="url(#cb2)"/><path d="M588 1120 C546 850 750 646 1058 596 C1346 552 1456 684 1306 878 C1236 968 1176 1036 1136 1120" fill="none" stroke="#0E7A57" stroke-width="2.5" opacity="0.5"/></svg>
+<div style="position:absolute;left:128px;top:64px;width:400px;height:64px;display:flex;flex-direction:row;align-items:center;gap:16px">
+<div style="width:56px;height:56px;background:#13241E;border-radius:16px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#9BE7C4;width:32px;height:32px;flex:none"><path d="M2 12h4l3-8 5 16 3-8h5"/></svg></div>
+<p style="font-size:32px;font-weight:500;letter-spacing:-0.5px">VitalHealth</p>
+</div>
+<div style="position:absolute;left:560px;top:76px;width:800px;height:40px;display:flex;flex-direction:row;justify-content:center;gap:48px"><p style="font-size:24px;color:#5B6B64">Сервис</p><p style="font-size:24px;color:#5B6B64">Врачи</p><p style="font-size:24px;color:#5B6B64">Подписка</p><p style="font-size:24px;color:#5B6B64">Контакты</p></div>
+<p style="position:absolute;right:128px;top:64px;width:220px;font-size:24px;font-weight:500;color:#F2F5F1;background:#13241E;padding:14px 0;border-radius:12px;text-align:center">Записаться</p>
+<div style="display:flex;flex-direction:row;align-items:center;gap:14px;background:rgba(251,252,250,0.85);border:1px solid #DCE6DF;border-radius:999px;padding:8px 28px 8px 8px">
+<div style="width:40px;height:40px;background:#13241E;border-radius:999px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#9BE7C4;width:24px;height:24px;flex:none"><path d="M12 2l2.6 2 3.2-.3 1 3 2.7 1.8-1 3.1 1 3.1-2.7 1.8-1 3-3.2-.3L12 22l-2.6-2-3.2.3-1-3-2.7-1.8 1-3.1-1-3.1 2.7-1.8 1-3 3.2.3z"/><path d="M8.5 12.2l2.5 2.5 4.5-5"/></svg></div>
+<p style="font-size:24px;color:#3F4F48">Проверенные врачи клиник-партнёров</p>
+</div>
+<h1 style="font-size:104px;font-weight:400;line-height:1.08;letter-spacing:-2px;text-align:center;width:1400px">Врач на связи — без поездок и очередей</h1>
+<p style="position:absolute;left:128px;bottom:64px;width:700px;font-size:24px;color:#5B6B64">Виталий Заровкин · 2026</p>
+<p style="position:absolute;right:128px;bottom:64px;width:700px;font-size:24px;color:#5B6B64;text-align:right">Платформа онлайн-приёмов у врачей</p>
+
+</section>
+
+<section id="problem" data-transition="fade" style="display:flex; flex-direction:column; gap:64px; padding:128px 128px 160px; background:#f2f5f1">
+<iframe data-srcdoc="<!doctype html><html><head><meta charset=&quot;utf-8&quot;><style>html,body{margin:0;height:100%;overflow:hidden;background:#F2F5F1}canvas{position:absolute;left:0;top:0;width:100%;height:100%}#b{filter:blur(10px);opacity:.6}#v{position:absolute;inset:0;background:radial-gradient(ellipse 55% 40% at 50% 46%,rgba(242,245,241,.45) 0%,rgba(242,245,241,0) 70%),radial-gradient(ellipse at 50% 50%,rgba(242,245,241,0) 65%,rgba(242,245,241,.5) 100%)}</style></head><body><canvas id=&quot;b&quot;></canvas><canvas id=&quot;m&quot;></canvas><div id=&quot;v&quot;></div><script>
+(function(){
+var M=document.getElementById('m'),B=document.getElementById('b'),c=M.getContext('2d'),bc=B.getContext('2d');
+var L=16,MAX=4000,ST=1/60,TAU=Math.PI*2,AB=4,SPB=4;
+var KR=1-Math.exp(-ST/.12),KQ=1-Math.exp(-ST*8),KC=1-Math.exp(-ST*18),KV=1-Math.exp(-ST*10),FP=.03*ST,FD=Math.exp(-ST/.45);
+var PAL=[[16,185,129],[14,140,210],[4,110,80]],CORE=[8,48,36];
+var BA=[.55,.72,.9],BW=[1.2,1.5,1.9];
+var seed=7;function r(){seed=(seed+0x6d2b79f5)>>>0;var t=seed;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296}
+function wv(l,a,o,p,A){var k=TAU/l;return[k*Math.cos(a),k*Math.sin(a),o,p,A*Math.sin(a),-A*Math.cos(a)]}
+var WV=[wv(380,.35,.18,.7,16),wv(620,1.9,.27,2.1,13),wv(900,3.4,.35,4.2,10)];
+var px=new Float32Array(MAX),py=new Float32Array(MAX),vx=new Float32Array(MAX),vy=new Float32Array(MAX),pz=new Float32Array(MAX),v0=new Float32Array(MAX),qv=new Float32Array(MAX),fi=new Float32Array(MAX),ln=new Uint8Array(MAX),hx=new Float32Array(MAX*L),hy=new Float32Array(MAX*L);
+var G=[],GC=new Int32Array(6);for(var g=0;g<6;g++)G.push(new Int32Array(MAX));
+var SS=[],SW=[],HS=[];
+var W=1,H=1,D=1,S=1,bw=1,bh=1,head=0,t=0,N=0,cx=0,cy=0,pcx=0,pcy=0,vcx=0,vcy=0,A0=64,raf=0,last=0,acc=0,mx=0,my=0,mt=-99,TL=54,TX=new Float32Array(54),TY=new Float32Array(54),ti=0,tn=0;
+function mv(e){mx=e.clientX;my=e.clientY;mt=t}addEventListener('pointermove',mv);addEventListener('mousemove',mv);
+var reduced=window.matchMedia&amp;&amp;matchMedia('(prefers-reduced-motion: reduce)').matches;
+function cl(v,a,b){return v<a?a:v>b?b:v}
+function styles(){for(var g=0;g<6;g++){var d=g<3?0:1,b=g%3,k=PAL[b];for(var a=0;a<AB;a++){var f=Math.pow(1-(a+.5)/AB,1.5),al=Math.min(.95,BA[b]*(d?1:.7)*f*1.3);SS[g*AB+a]='rgba('+k[0]+','+k[1]+','+k[2]+','+al.toFixed(3)+')';SW[g*AB+a]=cl(BW[b]*(d?1:.8)*(1-.45*a/AB)*Math.max(1,S),.8,3)}}HS[0]='rgba('+CORE+',0.6)';HS[1]='rgba('+CORE+',0.9)'}
+function sp(i,u){var x=u?r()*W:-40+r()*(W+80),y=u?r()*H:-40-r()*80,z=.35+.65*r();pz[i]=z;v0[i]=(70+90*z*z)*S;ln[i]=8+Math.floor(r()*8);px[i]=x;py[i]=y;vx[i]=0;vy[i]=v0[i];qv[i]=1;fi[i]=0;var o=i*L;for(var k=0;k<L;k++){hx[o+k]=x;hy[o+k]=y}}
+function size(){var w=innerWidth||1920,h=innerHeight||1080,d=Math.min(devicePixelRatio||1,2);if(w*h*d*d>4.5e6)d=Math.sqrt(4.5e6/(w*h));W=w;H=h;D=d;S=H/1080;M.width=Math.round(W*D);M.height=Math.round(H*D);bw=Math.ceil(W/4);bh=Math.ceil(H/4);B.width=bw;B.height=bh;A0=70*S;N=cl(Math.round(W*H/(520*S*S)),800,4000);for(var i=0;i<N;i++)sp(i,true);styles()}
+function sim(){head=(head+1)%L;t+=ST;
+var u=t-mt<2.5,tx=u?mx:W*(.5+.32*Math.sin(.37*t)),ty=u?my:H*(.5+.28*Math.sin(.53*t+1.2));pcx=cx;pcy=cy;cx+=(tx-cx)*KC;cy+=(ty-cy)*KC;vcx+=((cx-pcx)/ST-vcx)*KV;vcy+=((cy-pcy)/ST-vcy)*KV;
+ti=(ti+1)%TL;TX[ti]=cx;TY[ti]=cy;if(tn<TL)tn++;
+var vm=Math.sqrt(vcx*vcx+vcy*vcy),a=A0+Math.min(vm*.025,36*S);
+var p0=WV[0][2]*t+WV[0][3],p1=WV[1][2]*t+WV[1][3],p2=WV[2][2]*t+WV[2][3],w0=WV[0],w1=WV[1],w2=WV[2];
+for(var i=0;i<N;i++){var x0=px[i],y0=py[i],z=pz[i],v=v0[i];
+var c0=Math.cos(w0[0]*x0+w0[1]*y0+p0),c1=Math.cos(w1[0]*x0+w1[1]*y0+p1),c2=Math.cos(w2[0]*x0+w2[1]*y0+p2);
+var fx=(w0[4]*c0+w1[4]*c1+w2[4]*c2)*z*S,fy=v+(w0[5]*c0+w1[5]*c1+w2[5]*c2)*z*S;
+var zf=.55+.45*z,aE=a*zf,rx=x0-cx,ry=y0-cy,d2=rx*rx+ry*ry,qx=0,qy=0,df=0;
+var Ux=-vcx,Uy=v-vcy,U=Math.sqrt(Ux*Ux+Uy*Uy);
+if(U>1e-3){if(U>900*S){var sc=900*S/U;Ux*=sc;Uy*=sc;U=900*S}var ex=Ux/U,ey=Uy/U,s=rx*ex+ry*ey,n=-rx*ey+ry*ex;
+if(s>0&amp;&amp;s<12*aE){var nn=n/(.9*aE+.2*s);df=.55*Math.exp(-s/(3*aE))*Math.exp(-nn*nn)}
+var nr=9*aE;if(d2<nr*nr){var r2=Math.max(s*s+n*n,aE*aE*.64),k=aE*aE/(r2*r2),ds=-U*k*(s*s-n*n),dn=-U*k*2*s*n,wn=1,inn=5*aE;if(d2>inn*inn){var tt=(Math.sqrt(d2)-inn)/(4*aE);wn=1-tt*tt*(3-2*tt)}qx=(ds*ex-dn*ey)*wn;qy=(ds*ey+dn*ex)*wn}}
+var kp=1-df;fx=fx*kp+qx;fy=fy*kp+qy;
+var ux=vx[i]+(fx-vx[i])*KR,uy=vy[i]+(fy-vy[i])*KR,s2=ux*ux+uy*uy,lim=900*S;if(s2>lim*lim){var q=lim/Math.sqrt(s2);ux*=q;uy*=q}
+var x=x0+ux*ST,y=y0+uy*ST,ox=x-cx,oy=y-cy,o2=ox*ox+oy*oy,lm=.98*aE;
+if(o2<lm*lm){var rr=Math.sqrt(o2),nx=rr<1e-3?0:ox/rr,ny=rr<1e-3?1:oy/rr;x=cx+nx*aE;y=cy+ny*aE;var vn=(ux-vcx)*nx+(uy-vcy)*ny;if(vn<0){ux-=vn*nx;uy-=vn*ny}}
+vx[i]=ux;vy[i]=uy;px[i]=x;py[i]=y;
+if(y>H+40||x<-120||x>W+120||y<-600){sp(i,false);continue}
+qv[i]+=(Math.sqrt(ux*ux+uy*uy)/v-qv[i])*KQ;
+if(r()<FP)fi[i]=1;else{var f=fi[i]*FD;fi[i]=f<.01?0:f}
+var sl=i*L+head;hx[sl]=x;hy[sl]=y}}
+function draw(){c.setTransform(D,0,0,D,0,0);c.clearRect(0,0,W,H);c.lineCap='round';c.lineJoin='round';
+GC.fill(0);for(var i=0;i<N;i++){var q=qv[i],b=q<1.25?0:q<1.85?1:2;if(fi[i]>.35&amp;&amp;b<2)b++;var g=(pz[i]<.62?0:3)+b;G[g][GC[g]++]=i}
+for(var g=0;g<6;g++){var cnt=GC[g];if(!cnt)continue;var Lg=G[g];for(var a=0;a<AB;a++){var k0=a*SPB,k1=k0+SPB;c.strokeStyle=SS[g*AB+a];c.lineWidth=SW[g*AB+a];c.beginPath();
+for(var j=0;j<cnt;j++){var i=Lg[j],sg=ln[i]-1;if(k0>=sg)continue;var o=i*L,ke=Math.min(k1,sg),ix=(head-k0+L)%L;c.moveTo(hx[o+ix],hy[o+ix]);for(var k=k0;k<ke;k++){ix=ix===0?L-1:ix-1;c.lineTo(hx[o+ix],hy[o+ix])}}c.stroke()}}
+for(var p=0;p<2;p++)for(var k=1;k<tn;k++){var ia=(ti-k+1+TL)%TL,ib=(ti-k+TL)%TL,f=1-k/tn;c.strokeStyle=p?'rgba(14,140,210,'+(.75*f).toFixed(3)+')':'rgba(16,185,129,'+(.32*f).toFixed(3)+')';c.lineWidth=(p?1.5+5*f:4+30*f)*S;c.beginPath();c.moveTo(TX[ia],TY[ia]);c.lineTo(TX[ib],TY[ib]);c.stroke()}
+var ph=head===0?L-1:head-1;c.lineWidth=1.4*Math.max(1,S);
+for(var d=0;d<2;d++){c.strokeStyle=HS[d];c.beginPath();for(var b=1;b<3;b++){var g=d*3+b,cnt=GC[g],Lg=G[g];for(var j=0;j<cnt;j++){var i=Lg[j];if(b===1&amp;&amp;fi[i]<=.5)continue;var o=i*L;c.moveTo(hx[o+head],hy[o+head]);c.lineTo(hx[o+ph],hy[o+ph])}}c.stroke()}
+bc.clearRect(0,0,bw,bh);bc.drawImage(M,0,0,bw,bh)}
+function frame(now){var dt=Math.max(0,now-last);last=now;acc+=Math.min(.05,dt/1000);var n=0;while(acc>=ST&amp;&amp;n<3){sim();acc-=ST;n++}if(n===3)acc=0;if(n)draw();raf=requestAnimationFrame(frame)}
+size();cx=pcx=W*.5;cy=pcy=H*.5;for(var s=0;s<150;s++)sim();draw();
+if(!reduced){last=performance.now();raf=requestAnimationFrame(frame);
+document.addEventListener('visibilitychange',function(){if(document.hidden)cancelAnimationFrame(raf);else{last=performance.now();raf=requestAnimationFrame(frame)}})}
+var rt;addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){size();draw()},120)});
+})();
+</script><script>addEventListener('message',function(e){var d=e.data;if(d&amp;&amp;d.vh)dispatchEvent(new MouseEvent('mousemove',{clientX:d.x,clientY:d.y}))})</script></body></html>" style="position:absolute;left:0px;top:0px;width:1920px;height:1080px;border:0" title="" scrolling="no"></iframe>
+  <div style="display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:Onest, Arial, sans-serif; font-size:24px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#0d7a57">Проблема</p>
+    <h2 style="width:1500px; font-family:Onest, Arial, sans-serif; font-size:64px; font-weight:400; line-height:1.15; letter-spacing:-1px; color:#13241e">Получение качественной медицинской помощи</h2>
+  </div>
+  <iframe data-srcdoc="<!doctype html><html><head><meta charset=&quot;utf-8&quot;><style>
+html,body{margin:0;height:100%;overflow:hidden;background:transparent}
+#w{position:absolute;inset:0}
+.c{position:absolute;left:0;top:0;border-radius:28px;overflow:hidden;box-shadow:0 30px 60px rgba(19,36,30,.18);transform-origin:50% 50%;will-change:transform,opacity}
+.c svg{position:absolute;left:0;top:0;width:100%;height:100%}
+.c:after{content:&quot;&quot;;position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,30,22,0) 45%,rgba(6,30,22,.62) 100%)}
+.t{position:absolute;left:7%;right:7%;bottom:7%;z-index:1;color:#F2FBF6;font-family:-apple-system,&quot;Helvetica Neue&quot;,Arial,sans-serif}
+.t b{display:block;font-weight:600;font-size:calc(var(--u)*5.8);line-height:1.15;letter-spacing:-.02em}
+.t span{display:block;margin-top:.35em;font-size:calc(var(--u)*4.6);line-height:1.3;opacity:.85}
+.f{position:absolute;top:0;bottom:0;width:13%;z-index:50;pointer-events:none}
+#fl{left:0;background:linear-gradient(90deg,#F2F5F1 15%,rgba(242,245,241,0))}
+#fr{right:0;background:linear-gradient(270deg,#F2F5F1 15%,rgba(242,245,241,0))}
+</style></head><body><div id=&quot;w&quot;></div><script>
+(function(){
+var S='stroke=&quot;#F2FBF6&quot; stroke-width=&quot;6&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;';
+function glow(id,c,d,w){return '<defs><filter id=&quot;'+id+'&quot; x=&quot;-30%&quot; y=&quot;-30%&quot; width=&quot;160%&quot; height=&quot;160%&quot;><feGaussianBlur stdDeviation=&quot;22&quot;/></filter></defs><path d=&quot;'+d+'&quot; stroke=&quot;'+c+'&quot; stroke-width=&quot;'+w+'&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot; opacity=&quot;.85&quot; filter=&quot;url(#'+id+')&quot;/>'}
+function ppl(x,o){return '<g opacity=&quot;'+o+'&quot;><circle cx=&quot;'+x+'&quot; cy=&quot;112&quot; r=&quot;15&quot;/><path d=&quot;M'+(x-22)+' 172q22-42 44 0&quot;/></g>'}
+var T='font-family=&quot;-apple-system,Helvetica Neue,Arial,sans-serif&quot; font-weight=&quot;600&quot; fill=&quot;#F2FBF6&quot; text-anchor=&quot;middle&quot;';
+var C=[
+{bg:'linear-gradient(140deg,#0F2A21,#1A6A50)',t:'Очереди и дорога',s:'Время уходит на путь и ожидание',
+svg:glow('g1','#5CD3A6','M-60 330 Q250 10 580 300',48)+'<g '+S+'><circle cx=&quot;150&quot; cy=&quot;130&quot; r=&quot;38&quot;/><path d=&quot;M150 108v24l16 10&quot;/>'+ppl(250,1)+ppl(310,.75)+ppl(370,.55)+ppl(430,.35)+'</g>'},
+{bg:'linear-gradient(140deg,#2A9FC2,#0D4F66)',t:'Советы из интернета',s:'Форумы и нейросети часто ошибаются',
+svg:glow('g2','#9BE7C4','M600 40 Q300 120 -40 60',40)+'<g '+S+'><rect x=&quot;150&quot; y=&quot;56&quot; width=&quot;200&quot; height=&quot;110&quot; rx=&quot;34&quot;/><path d=&quot;M196 166l-14 32 40-32&quot;/><rect x=&quot;292&quot; y=&quot;146&quot; width=&quot;150&quot; height=&quot;86&quot; rx=&quot;28&quot;/></g><text x=&quot;250&quot; y=&quot;138&quot; font-size=&quot;72&quot; '+T+'>?</text><text x=&quot;367&quot; y=&quot;208&quot; font-size=&quot;56&quot; '+T+'>!</text>'},
+{bg:'linear-gradient(140deg,#4CC9A0,#0E6E51)',t:'Поиск хорошего врача',s:'Десятки сайтов, непонятно кому верить',
+svg:glow('g3','#EAF8C8','M-40 120 Q260 330 580 160',44)+'<g '+S+'><g stroke-width=&quot;4&quot; opacity=&quot;.55&quot;><rect x=&quot;120&quot; y=&quot;44&quot; width=&quot;72&quot; height=&quot;62&quot; rx=&quot;12&quot;/><rect x=&quot;206&quot; y=&quot;44&quot; width=&quot;72&quot; height=&quot;62&quot; rx=&quot;12&quot;/><rect x=&quot;292&quot; y=&quot;44&quot; width=&quot;72&quot; height=&quot;62&quot; rx=&quot;12&quot;/><rect x=&quot;120&quot; y=&quot;120&quot; width=&quot;72&quot; height=&quot;62&quot; rx=&quot;12&quot;/><rect x=&quot;206&quot; y=&quot;120&quot; width=&quot;72&quot; height=&quot;62&quot; rx=&quot;12&quot;/></g><circle cx=&quot;330&quot; cy=&quot;156&quot; r=&quot;52&quot; fill=&quot;rgba(255,255,255,.14)&quot; stroke-width=&quot;7&quot;/><path d=&quot;M368 194l44 44&quot; stroke-width=&quot;11&quot;/></g>'},
+{bg:'linear-gradient(140deg,#8ED96A,#1D8059)',t:'Дорогой очный приём',s:'Визит к врачу не всем по карману',
+svg:glow('g4','#F4FBD8','M-40 280 Q200 60 600 120',46)+'<g '+S+'><path d=&quot;M180 84h150l62 64-62 64H180a20 20 0 0 1-20-20v-88a20 20 0 0 1 20-20z&quot;/><circle cx=&quot;350&quot; cy=&quot;148&quot; r=&quot;9&quot;/></g><text x=&quot;245&quot; y=&quot;182&quot; font-size=&quot;96&quot; '+T+'>₽</text>'},
+{bg:'linear-gradient(140deg,#1B3F58,#2A9FC2)',t:'Непонятные анализы',s:'Результаты без объяснений врача',
+svg:glow('g5','#5CD3A6','M-40 60 Q300 300 600 40',44)+'<g '+S+'><rect x=&quot;170&quot; y=&quot;36&quot; width=&quot;170&quot; height=&quot;200&quot; rx=&quot;18&quot;/><path d=&quot;M196 78h118M196 106h80&quot;/><path d=&quot;M196 200l30-30 24 14 30-44 34 20&quot;/><circle cx=&quot;352&quot; cy=&quot;76&quot; r=&quot;34&quot; fill=&quot;#13241E&quot;/></g><text x=&quot;352&quot; y=&quot;92&quot; font-size=&quot;44&quot; '+T+'>?</text>'},
+{bg:'linear-gradient(140deg,#13241E,#0D7A57)',t:'Нет связи после приёма',s:'Некому задать вопрос потом',
+svg:glow('g6','#2A9FC2','M-40 300 Q280 80 600 260',48)+'<g '+S+'><rect x=&quot;206&quot; y=&quot;30&quot; width=&quot;134&quot; height=&quot;220&quot; rx=&quot;26&quot;/><rect x=&quot;230&quot; y=&quot;84&quot; width=&quot;88&quot; height=&quot;48&quot; rx=&quot;16&quot;/><circle cx=&quot;352&quot; cy=&quot;60&quot; r=&quot;26&quot; fill=&quot;#13241E&quot;/><path d=&quot;M335 77l34-34&quot;/></g><g fill=&quot;#F2FBF6&quot;><circle cx=&quot;254&quot; cy=&quot;108&quot; r=&quot;5&quot;/><circle cx=&quot;274&quot; cy=&quot;108&quot; r=&quot;5&quot;/><circle cx=&quot;294&quot; cy=&quot;108&quot; r=&quot;5&quot;/></g>'}];
+var w=document.getElementById('w'),els=[];
+for(var i=0;i<C.length;i++){var d=document.createElement('div');d.className='c';d.style.background=C[i].bg;d.innerHTML='<svg viewBox=&quot;0 0 520 375&quot; preserveAspectRatio=&quot;xMidYMid slice&quot; aria-hidden=&quot;true&quot;>'+C[i].svg+'</svg><div class=&quot;t&quot;><b>'+C[i].t+'</b><span>'+C[i].s+'</span></div>';w.appendChild(d);els.push(d)}
+var N=els.length,W=1,H=1,cw=1,ch=1,sp=1,off=0,tgt=0,last=0,hold=0;
+function lay(){W=innerWidth||1920;H=innerHeight||570;cw=W*.27;ch=cw*.72;if(ch>H*.74){ch=H*.74;cw=ch/.72}sp=cw+W*.016;w.style.perspective=(W*.7)+'px';w.style.setProperty('--u',(cw/100)+'px');for(var i=0;i<N;i++){els[i].style.width=cw+'px';els[i].style.height=ch+'px';els[i].style.top=((H-ch)/2)+'px'}}
+function place(){var Tt=N*sp;for(var i=0;i<N;i++){var x=((i*sp-off)%Tt+Tt)%Tt;if(x>=Tt/2)x-=Tt;var d=x/sp,r=Math.max(-62,Math.min(62,-d*26)),o=Math.max(0,Math.min(1,1.3-(Math.abs(d)-1.4)*.9));var e=els[i];e.style.transform='translateX('+(W/2+x-cw/2)+'px) rotateY('+r+'deg)';e.style.opacity=o;e.style.zIndex=String(20-Math.round(Math.abs(d)*4))}}
+function fr(now){var dt=Math.min(.05,(now-last)/1000);last=now;hold+=dt;if(hold>3.2){hold=0;tgt+=sp}off+=(tgt-off)*(1-Math.exp(-dt*3.2));place();requestAnimationFrame(fr)}
+lay();place();
+if(!(window.matchMedia&amp;&amp;matchMedia('(prefers-reduced-motion: reduce)').matches)){last=performance.now();requestAnimationFrame(fr)}
+addEventListener('resize',function(){lay();place()});
+})();
+</script><script>addEventListener('message',function(e){var d=e.data;if(d&amp;&amp;d.vh)dispatchEvent(new MouseEvent('mousemove',{clientX:d.x,clientY:d.y}))})</script></body></html>" style="position:absolute; top:340px; left:0; width:1920px; height:570px;border:0" title="" scrolling="no"></iframe>
+  <p style="position:absolute; bottom:64px; left:128px; width:400px; font-family:Onest, Arial, sans-serif; font-size:24px; color:#5b6b64">02</p>
+  
+</section>
+
+<section id="how" data-transition="fade" style="display:flex; flex-direction:column; gap:40px; justify-content:space-between; padding:128px 128px 160px; background:#f2f5f1">
+<iframe data-srcdoc="<!doctype html><html><head><meta charset=&quot;utf-8&quot;><style>html,body{margin:0;height:100%;overflow:hidden;background:#F2F5F1}canvas{position:absolute;left:0;top:0;width:100%;height:100%}#b{filter:blur(10px);opacity:.6}#v{position:absolute;inset:0;background:radial-gradient(ellipse 55% 40% at 50% 46%,rgba(242,245,241,.45) 0%,rgba(242,245,241,0) 70%),radial-gradient(ellipse at 50% 50%,rgba(242,245,241,0) 65%,rgba(242,245,241,.5) 100%)}</style></head><body><canvas id=&quot;b&quot;></canvas><canvas id=&quot;m&quot;></canvas><div id=&quot;v&quot;></div><script>
+(function(){
+var M=document.getElementById('m'),B=document.getElementById('b'),c=M.getContext('2d'),bc=B.getContext('2d');
+var L=16,MAX=4000,ST=1/60,TAU=Math.PI*2,AB=4,SPB=4;
+var KR=1-Math.exp(-ST/.12),KQ=1-Math.exp(-ST*8),KC=1-Math.exp(-ST*18),KV=1-Math.exp(-ST*10),FP=.03*ST,FD=Math.exp(-ST/.45);
+var PAL=[[16,185,129],[14,140,210],[4,110,80]],CORE=[8,48,36];
+var BA=[.55,.72,.9],BW=[1.2,1.5,1.9];
+var seed=7;function r(){seed=(seed+0x6d2b79f5)>>>0;var t=seed;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296}
+function wv(l,a,o,p,A){var k=TAU/l;return[k*Math.cos(a),k*Math.sin(a),o,p,A*Math.sin(a),-A*Math.cos(a)]}
+var WV=[wv(380,.35,.18,.7,16),wv(620,1.9,.27,2.1,13),wv(900,3.4,.35,4.2,10)];
+var px=new Float32Array(MAX),py=new Float32Array(MAX),vx=new Float32Array(MAX),vy=new Float32Array(MAX),pz=new Float32Array(MAX),v0=new Float32Array(MAX),qv=new Float32Array(MAX),fi=new Float32Array(MAX),ln=new Uint8Array(MAX),hx=new Float32Array(MAX*L),hy=new Float32Array(MAX*L);
+var G=[],GC=new Int32Array(6);for(var g=0;g<6;g++)G.push(new Int32Array(MAX));
+var SS=[],SW=[],HS=[];
+var W=1,H=1,D=1,S=1,bw=1,bh=1,head=0,t=0,N=0,cx=0,cy=0,pcx=0,pcy=0,vcx=0,vcy=0,A0=64,raf=0,last=0,acc=0,mx=0,my=0,mt=-99,TL=54,TX=new Float32Array(54),TY=new Float32Array(54),ti=0,tn=0;
+function mv(e){mx=e.clientX;my=e.clientY;mt=t}addEventListener('pointermove',mv);addEventListener('mousemove',mv);
+var reduced=window.matchMedia&amp;&amp;matchMedia('(prefers-reduced-motion: reduce)').matches;
+function cl(v,a,b){return v<a?a:v>b?b:v}
+function styles(){for(var g=0;g<6;g++){var d=g<3?0:1,b=g%3,k=PAL[b];for(var a=0;a<AB;a++){var f=Math.pow(1-(a+.5)/AB,1.5),al=Math.min(.95,BA[b]*(d?1:.7)*f*1.3);SS[g*AB+a]='rgba('+k[0]+','+k[1]+','+k[2]+','+al.toFixed(3)+')';SW[g*AB+a]=cl(BW[b]*(d?1:.8)*(1-.45*a/AB)*Math.max(1,S),.8,3)}}HS[0]='rgba('+CORE+',0.6)';HS[1]='rgba('+CORE+',0.9)'}
+function sp(i,u){var x=u?r()*W:-40+r()*(W+80),y=u?r()*H:-40-r()*80,z=.35+.65*r();pz[i]=z;v0[i]=(70+90*z*z)*S;ln[i]=8+Math.floor(r()*8);px[i]=x;py[i]=y;vx[i]=0;vy[i]=v0[i];qv[i]=1;fi[i]=0;var o=i*L;for(var k=0;k<L;k++){hx[o+k]=x;hy[o+k]=y}}
+function size(){var w=innerWidth||1920,h=innerHeight||1080,d=Math.min(devicePixelRatio||1,2);if(w*h*d*d>4.5e6)d=Math.sqrt(4.5e6/(w*h));W=w;H=h;D=d;S=H/1080;M.width=Math.round(W*D);M.height=Math.round(H*D);bw=Math.ceil(W/4);bh=Math.ceil(H/4);B.width=bw;B.height=bh;A0=70*S;N=cl(Math.round(W*H/(520*S*S)),800,4000);for(var i=0;i<N;i++)sp(i,true);styles()}
+function sim(){head=(head+1)%L;t+=ST;
+var u=t-mt<2.5,tx=u?mx:W*(.5+.32*Math.sin(.37*t)),ty=u?my:H*(.5+.28*Math.sin(.53*t+1.2));pcx=cx;pcy=cy;cx+=(tx-cx)*KC;cy+=(ty-cy)*KC;vcx+=((cx-pcx)/ST-vcx)*KV;vcy+=((cy-pcy)/ST-vcy)*KV;
+ti=(ti+1)%TL;TX[ti]=cx;TY[ti]=cy;if(tn<TL)tn++;
+var vm=Math.sqrt(vcx*vcx+vcy*vcy),a=A0+Math.min(vm*.025,36*S);
+var p0=WV[0][2]*t+WV[0][3],p1=WV[1][2]*t+WV[1][3],p2=WV[2][2]*t+WV[2][3],w0=WV[0],w1=WV[1],w2=WV[2];
+for(var i=0;i<N;i++){var x0=px[i],y0=py[i],z=pz[i],v=v0[i];
+var c0=Math.cos(w0[0]*x0+w0[1]*y0+p0),c1=Math.cos(w1[0]*x0+w1[1]*y0+p1),c2=Math.cos(w2[0]*x0+w2[1]*y0+p2);
+var fx=(w0[4]*c0+w1[4]*c1+w2[4]*c2)*z*S,fy=v+(w0[5]*c0+w1[5]*c1+w2[5]*c2)*z*S;
+var zf=.55+.45*z,aE=a*zf,rx=x0-cx,ry=y0-cy,d2=rx*rx+ry*ry,qx=0,qy=0,df=0;
+var Ux=-vcx,Uy=v-vcy,U=Math.sqrt(Ux*Ux+Uy*Uy);
+if(U>1e-3){if(U>900*S){var sc=900*S/U;Ux*=sc;Uy*=sc;U=900*S}var ex=Ux/U,ey=Uy/U,s=rx*ex+ry*ey,n=-rx*ey+ry*ex;
+if(s>0&amp;&amp;s<12*aE){var nn=n/(.9*aE+.2*s);df=.55*Math.exp(-s/(3*aE))*Math.exp(-nn*nn)}
+var nr=9*aE;if(d2<nr*nr){var r2=Math.max(s*s+n*n,aE*aE*.64),k=aE*aE/(r2*r2),ds=-U*k*(s*s-n*n),dn=-U*k*2*s*n,wn=1,inn=5*aE;if(d2>inn*inn){var tt=(Math.sqrt(d2)-inn)/(4*aE);wn=1-tt*tt*(3-2*tt)}qx=(ds*ex-dn*ey)*wn;qy=(ds*ey+dn*ex)*wn}}
+var kp=1-df;fx=fx*kp+qx;fy=fy*kp+qy;
+var ux=vx[i]+(fx-vx[i])*KR,uy=vy[i]+(fy-vy[i])*KR,s2=ux*ux+uy*uy,lim=900*S;if(s2>lim*lim){var q=lim/Math.sqrt(s2);ux*=q;uy*=q}
+var x=x0+ux*ST,y=y0+uy*ST,ox=x-cx,oy=y-cy,o2=ox*ox+oy*oy,lm=.98*aE;
+if(o2<lm*lm){var rr=Math.sqrt(o2),nx=rr<1e-3?0:ox/rr,ny=rr<1e-3?1:oy/rr;x=cx+nx*aE;y=cy+ny*aE;var vn=(ux-vcx)*nx+(uy-vcy)*ny;if(vn<0){ux-=vn*nx;uy-=vn*ny}}
+vx[i]=ux;vy[i]=uy;px[i]=x;py[i]=y;
+if(y>H+40||x<-120||x>W+120||y<-600){sp(i,false);continue}
+qv[i]+=(Math.sqrt(ux*ux+uy*uy)/v-qv[i])*KQ;
+if(r()<FP)fi[i]=1;else{var f=fi[i]*FD;fi[i]=f<.01?0:f}
+var sl=i*L+head;hx[sl]=x;hy[sl]=y}}
+function draw(){c.setTransform(D,0,0,D,0,0);c.clearRect(0,0,W,H);c.lineCap='round';c.lineJoin='round';
+GC.fill(0);for(var i=0;i<N;i++){var q=qv[i],b=q<1.25?0:q<1.85?1:2;if(fi[i]>.35&amp;&amp;b<2)b++;var g=(pz[i]<.62?0:3)+b;G[g][GC[g]++]=i}
+for(var g=0;g<6;g++){var cnt=GC[g];if(!cnt)continue;var Lg=G[g];for(var a=0;a<AB;a++){var k0=a*SPB,k1=k0+SPB;c.strokeStyle=SS[g*AB+a];c.lineWidth=SW[g*AB+a];c.beginPath();
+for(var j=0;j<cnt;j++){var i=Lg[j],sg=ln[i]-1;if(k0>=sg)continue;var o=i*L,ke=Math.min(k1,sg),ix=(head-k0+L)%L;c.moveTo(hx[o+ix],hy[o+ix]);for(var k=k0;k<ke;k++){ix=ix===0?L-1:ix-1;c.lineTo(hx[o+ix],hy[o+ix])}}c.stroke()}}
+for(var p=0;p<2;p++)for(var k=1;k<tn;k++){var ia=(ti-k+1+TL)%TL,ib=(ti-k+TL)%TL,f=1-k/tn;c.strokeStyle=p?'rgba(14,140,210,'+(.75*f).toFixed(3)+')':'rgba(16,185,129,'+(.32*f).toFixed(3)+')';c.lineWidth=(p?1.5+5*f:4+30*f)*S;c.beginPath();c.moveTo(TX[ia],TY[ia]);c.lineTo(TX[ib],TY[ib]);c.stroke()}
+var ph=head===0?L-1:head-1;c.lineWidth=1.4*Math.max(1,S);
+for(var d=0;d<2;d++){c.strokeStyle=HS[d];c.beginPath();for(var b=1;b<3;b++){var g=d*3+b,cnt=GC[g],Lg=G[g];for(var j=0;j<cnt;j++){var i=Lg[j];if(b===1&amp;&amp;fi[i]<=.5)continue;var o=i*L;c.moveTo(hx[o+head],hy[o+head]);c.lineTo(hx[o+ph],hy[o+ph])}}c.stroke()}
+bc.clearRect(0,0,bw,bh);bc.drawImage(M,0,0,bw,bh)}
+function frame(now){var dt=Math.max(0,now-last);last=now;acc+=Math.min(.05,dt/1000);var n=0;while(acc>=ST&amp;&amp;n<3){sim();acc-=ST;n++}if(n===3)acc=0;if(n)draw();raf=requestAnimationFrame(frame)}
+size();cx=pcx=W*.5;cy=pcy=H*.5;for(var s=0;s<150;s++)sim();draw();
+if(!reduced){last=performance.now();raf=requestAnimationFrame(frame);
+document.addEventListener('visibilitychange',function(){if(document.hidden)cancelAnimationFrame(raf);else{last=performance.now();raf=requestAnimationFrame(frame)}})}
+var rt;addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){size();draw()},120)});
+})();
+</script><script>addEventListener('message',function(e){var d=e.data;if(d&amp;&amp;d.vh)dispatchEvent(new MouseEvent('mousemove',{clientX:d.x,clientY:d.y}))})</script></body></html>" style="position:absolute;left:0px;top:0px;width:1920px;height:1080px;border:0" title="" scrolling="no"></iframe>
+  <div style="display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:Onest, Arial, sans-serif; font-size:24px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#0d7a57">Решение</p>
+    <h2 style="font-family:Onest, Arial, sans-serif; font-size:64px; font-weight:400; line-height:1.15; letter-spacing:-1px; color:#13241e">Как работает VitalHealth</h2>
+  </div>
+  <div style="position:relative; width:1664px; height:440px; display:flex; flex-direction:column; align-self:stretch; background:rgba(251,252,250,0.86); backdrop-filter:blur(8px); border:1px solid #dce6df; border-radius:28px">
+    <svg xmlns="http://www.w3.org/2000/svg" aria-label="Схема связей между пациентом, платформой, врачом, ИИ и картой пациента" viewBox="0 0 1664 440" style="position:absolute; top:0; left:0; width:1664px; height:440px"><g fill="none" stroke="#889892" stroke-width="2.5" stroke-linecap="round"><path d="M20 48V20H48M1616 20H1644V48M1644 392V420H1616M48 420H20V392"/></g><g fill="none" stroke="#A9BDB3" stroke-width="2.5"><path d="M212 190H420"/><path d="M680 192C770 192 770 98 860 98"/><path d="M680 192C770 192 770 298 860 298"/><path d="M1190 98C1250 98 1240 150 1300 150"/><path d="M1190 298C1250 298 1240 260 1300 260"/></g><path d="M1300 352C1000 436 420 436 160 262" fill="none" stroke="#0D7A57" stroke-width="2.5" stroke-dasharray="10 10"/><path d="M160 262l4 20M160 262l18 9" fill="none" stroke="#0D7A57" stroke-width="2.5" stroke-linecap="round"/><g fill="#0D7A57"><circle cx="316" cy="190" r="7"/><circle cx="770" cy="145" r="7"/><circle cx="770" cy="245" r="7"/><circle cx="1245" cy="124" r="6"/><circle cx="1245" cy="279" r="6"/></g></svg>
+    <div style="position:absolute; top:134px; left:94px; width:112px; height:112px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#e2f0e9; border:2px solid #4cc9a0; border-radius:256px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:52px; height:52px; color:#0d7a57;flex:none"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.7 0 4.5 1.8 4.5 4.5"/></svg>
+    </div>
+    <p style="position:absolute; top:58px; left:60px; width:180px; font-family:Onest, Arial, sans-serif; font-size:28px; font-weight:500; text-align:center; color:#13241e">Пациент</p>
+    <p style="position:absolute; top:132px; left:250px; width:150px; padding:6px 0; font-family:Onest, Arial, sans-serif; font-size:24px; text-align:center; color:#0d7a57; background:#e2f0e9; border-radius:256px">запись 24/7</p>
+    <div style="position:absolute; top:150px; left:420px; width:260px; height:84px; display:flex; flex-direction:row; gap:14px; align-items:center; justify-content:center; background:#13241e; border-radius:20px; box-shadow:0 16px 40px #0d7a5740">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:36px; height:36px; color:#9be7c4;flex:none"><path d="M2 12h4l3-8 5 16 3-8h5"/></svg>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:30px; font-weight:500; color:#eef5f0">VitalHealth</p>
+    </div>
+    <div style="position:absolute; top:50px; left:860px; width:330px; height:96px; display:flex; flex-direction:row; gap:18px; align-items:center; padding:0 20px; background:#fbfcfa; border:1px solid #dce6df; border-radius:20px; box-shadow:0 12px 32px #13241e0f">
+      <div style="width:56px; height:56px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:linear-gradient(135deg, #d6f5e5 0%, #4cc9a0 100%); border-radius:16px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:30px; height:30px; color:#fbfcfa;flex:none"><path d="M4 5h16v11H9l-5 4z"/></svg>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:2px; flex:1">
+        <p style="font-family:Onest, Arial, sans-serif; font-size:28px; font-weight:600; color:#13241e">Лечащий врач</p>
+        <p style="font-family:Onest, Arial, sans-serif; font-size:24px; color:#5b6b64">видео и переписка</p>
+      </div>
+    </div>
+    <div style="position:absolute; top:250px; left:860px; width:330px; height:96px; display:flex; flex-direction:row; gap:18px; align-items:center; padding:0 20px; background:#fbfcfa; border:1px solid #dce6df; border-radius:20px; box-shadow:0 12px 32px #13241e0f">
+      <div style="width:56px; height:56px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:linear-gradient(135deg, #cdeff7 0%, #2a9fc2 100%); border-radius:16px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:30px; height:30px; color:#fbfcfa;flex:none"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:2px; flex:1">
+        <p style="font-family:Onest, Arial, sans-serif; font-size:28px; font-weight:600; color:#13241e">ИИ-ассистент</p>
+        <p style="font-family:Onest, Arial, sans-serif; font-size:24px; color:#5b6b64">проверяет и подсказывает</p>
+      </div>
+    </div>
+    <svg style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;color:#0d7a57"><defs><marker id="ah1" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs><line x1="1025" y1="152" x2="1025" y2="244" stroke="currentColor" stroke-width="2" marker-start="url(#ah1)" marker-end="url(#ah1)"/></svg>
+    <p style="position:absolute; top:180px; left:1042px; width:200px; font-family:Onest, Arial, sans-serif; font-size:24px; color:#0d7a57">в паре</p>
+    <div style="position:absolute; top:40px; left:1300px; width:340px; height:330px; display:flex; flex-direction:column; gap:16px; padding:26px 28px; background:#fbfcfa; border:1px solid #dce6df; border-radius:20px; box-shadow:0 16px 40px #13241e14">
+      <p style="font-family:Onest, Arial, sans-serif; font-size:24px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#5b6b64">Карта пациента</p>
+      <svg xmlns="http://www.w3.org/2000/svg" aria-label="Столбчатая диаграмма показателей" viewBox="0 0 284 80" style="width:284px; height:80px"><g fill="#BFE8D6"><rect x="0" y="40" width="28" height="40" rx="5"/><rect x="40" y="22" width="28" height="58" rx="5"/><rect x="80" y="48" width="28" height="32" rx="5"/></g><g fill="#4CC9A0"><rect x="120" y="14" width="28" height="66" rx="5"/><rect x="160" y="30" width="28" height="50" rx="5"/></g><rect x="200" y="0" width="28" height="80" rx="5" fill="#0D7A57"/><g fill="#DCE6DF"><rect x="242" y="20" width="42" height="7" rx="3"/><rect x="242" y="38" width="30" height="7" rx="3"/><rect x="242" y="56" width="38" height="7" rx="3"/></g></svg>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; flex-direction:row; gap:10px; align-items:center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:28px; height:28px; color:#0d7a57;flex:none"><circle cx="12" cy="12" r="9.5"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>
+          <p style="font-family:Onest, Arial, sans-serif; font-size:24px; color:#13241e">Диагноз сверен</p>
+        </div>
+        <div style="display:flex; flex-direction:row; gap:10px; align-items:center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:28px; height:28px; color:#0d7a57;flex:none"><circle cx="12" cy="12" r="9.5"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>
+          <p style="font-family:Onest, Arial, sans-serif; font-size:24px; color:#13241e">Анализы проверены</p>
+        </div>
+        <div style="display:flex; flex-direction:row; gap:10px; align-items:center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:28px; height:28px; color:#0d7a57;flex:none"><circle cx="12" cy="12" r="9.5"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>
+          <p style="font-family:Onest, Arial, sans-serif; font-size:24px; color:#13241e">Рекомендации</p>
+        </div>
+      </div>
+    </div>
+    <p style="position:absolute; top:352px; left:560px; width:420px; font-family:Onest, Arial, sans-serif; font-size:24px; text-align:center; color:#0d7a57">заключение и наблюдение</p>
+  </div>
+  <div style="display:flex; flex-direction:row; gap:48px">
+    <div style="display:flex; flex-direction:column; gap:8px; flex:1">
+      <h3 style="font-family:Onest, Arial, sans-serif; font-size:32px; font-weight:500; line-height:1.2; color:#13241e">Запись в любое время</h3>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:24px; line-height:1.4; color:#5b6b64">Видеоприём у проверенного врача клиники-партнёра</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px; flex:1">
+      <h3 style="font-family:Onest, Arial, sans-serif; font-size:32px; font-weight:500; line-height:1.2; color:#13241e">&nbsp;Врач всегда на связи</h3>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:24px; line-height:1.4; color:#5b6b64">Лечащий врач ведёт вас и отвечает в переписке</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px; flex:1">
+      <h3 style="font-family:Onest, Arial, sans-serif; font-size:32px; font-weight:500; line-height:1.2; color:#13241e">ИИ в паре с врачом</h3>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:24px; line-height:1.4; color:#5b6b64">Ведёт карту, сверяет диагнозы и анализы, даёт рекомендации</p>
+    </div>
+  </div>
+  <p style="position:absolute; bottom:64px; left:128px; width:400px; font-family:Onest, Arial, sans-serif; font-size:24px; color:#5b6b64">03</p>
+  
+</section>
+
+<section id="audience" data-transition="fade" style="display:flex; flex-direction:column; gap:48px; justify-content:space-between; padding:128px 128px 160px; background:#0f3a30">
+  <video data-src="assets/girl.mp4" poster="assets/girl.jpg" aria-label="Девушка в свитере на фоне неба" muted loop playsinline preload="metadata" style="position:absolute; top:0; left:0; width:1920px; height:1080px; object-fit:cover; filter:saturate(0.85);object-fit:cover"></video>
+  <iframe data-srcdoc="<!doctype html><html><head><meta charset=&quot;utf-8&quot;><style>html,body{margin:0;height:100%;overflow:hidden;background:transparent}canvas{position:absolute;left:0;top:0;width:100%;height:100%}</style></head><body><canvas id=&quot;c&quot;></canvas><script>
+(function(){
+var CF={c:[&quot;155,231,196&quot;,&quot;92,200,230&quot;,&quot;200,255,225&quot;],b:&quot;.22&quot;,a:&quot;.2&quot;,s:9,p:80,g:0,k:26,t:0,f:0,au:0,rs:[1.05,-.1,.4,.65],ra:0};
+var C=document.getElementById('c'),x=C.getContext('2d'),W=1,H=1,D=1,s=1,i;
+var seed=5;function r(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
+var P=[],G=[],B=[],K=[],S=[];
+for(i=0;i<CF.p;i++)P.push({x:r(),y:r(),s:.8+r()*2.4,v:.008+r()*.02,f:.6+r()*1.6,h:r()*6.28});
+for(i=0;i<CF.g;i++)G.push({x:r(),y:r(),T:3+r()*5,o:r()*9});
+for(i=0;i<CF.k;i++)B.push({x:r(),y:r(),d:.2+r()*.8,h:r()*6.28,q:.3+r()});
+for(i=0;i<9;i++)K.push({y:.04+r()*.8,d:.25+r()*.75,o:r()*1.6,h:r()});
+for(i=0;i<CF.t;i++)S.push({x:r()*1.4-.2,o:r(),v:.1+r()*.16,w:.8+r()*2.4});
+function rs(){W=innerWidth||1920;H=innerHeight||1080;s=H/1080;D=Math.min(devicePixelRatio||1,2);C.width=Math.round(W*D);C.height=Math.round(H*D)}
+function rg(cx,cy,R,c,a,b){var g=x.createRadialGradient(cx,cy,0,cx,cy,R);g.addColorStop(0,'rgba('+c+','+a+')');g.addColorStop(1,'rgba('+c+','+(b||0)+')');return g}
+function fr(t){
+x.setTransform(D,0,0,D,0,0);x.clearRect(0,0,W,H);x.globalCompositeOperation='lighter';x.globalAlpha=1;
+for(var i=0;i<3;i++){var c=CF.c[i],cx=W*(.5+.42*Math.sin(t*.13*(i+1)+i*2.1)),cy=H*(.5+.38*Math.cos(t*.1*(i+2)+i*1.3)),R=H*(.55+.15*Math.sin(t*.23+i));x.fillStyle=rg(cx,cy,R,c,CF.b);x.fillRect(0,0,W,H)}
+if(CF.au){var br=.5+.5*Math.sin(t*.7);x.fillStyle=rg(W*.56,H*.4,H*(.42+.06*br),'210,255,230',.12+.08*br);x.fillRect(0,0,W,H)}
+var sx=CF.rs[0]*W,sy=CF.rs[1]*H,base=Math.atan2(CF.rs[3]*H-sy,CF.rs[2]*W-sx),L=2.8*H;
+for(i=-6;i<=6;i++){var an=base+i*.1+.07*Math.sin(t*.17+i*.7),hw=.03+.022*Math.sin(t*.31+i*1.9),al=Math.max(0,CF.ra*(.55+.45*Math.sin(t*.5+i*1.3)))*(1-Math.abs(i)/8);
+var gr=x.createLinearGradient(sx,sy,sx+Math.cos(an)*L,sy+Math.sin(an)*L);gr.addColorStop(0,'rgba(220,255,238,'+al.toFixed(3)+')');gr.addColorStop(1,'rgba(220,255,238,0)');x.fillStyle=gr;x.beginPath();x.moveTo(sx,sy);x.lineTo(sx+Math.cos(an-hw)*L,sy+Math.sin(an-hw)*L);x.lineTo(sx+Math.cos(an+hw)*L,sy+Math.sin(an+hw)*L);x.closePath();x.fill()}
+for(i=0;i<K.length;i++){var k=K[i],cx=((t*(.008+.02*k.d)+k.o)%1.5-.25)*W,cy=k.y*H+12*s*Math.sin(t*.3+k.h*6),w=W*(.35+.4*k.d);x.save();x.translate(cx,cy);x.scale(1,.2*k.d+.1);x.fillStyle=rg(0,0,w*.5,'225,255,242',.16+.1*k.d);x.fillRect(-w,-w,2*w,2*w);x.restore()}
+if(CF.f){var fx=CF.rs[0]*W,fy=CF.rs[1]*H,pu=.7+.3*Math.sin(t*.9);x.fillStyle=rg(fx,fy,H*.7*pu,'255,244,205',.34);x.fillRect(0,0,W,H);x.strokeStyle='rgba(255,250,225,'+(.22*pu).toFixed(3)+')';x.lineWidth=2.5*s;x.beginPath();for(i=0;i<8;i++){var a2=t*.05+i*.7854;x.moveTo(fx,fy);x.lineTo(fx+Math.cos(a2)*H*.9,fy+Math.sin(a2)*H*.9)}x.stroke();
+for(i=1;i<5;i++){var gx=fx+(W*.5-fx)*i*.34,gy=fy+(H*.5-fy)*i*.34;x.fillStyle=rg(gx,gy,H*(.03+.03*i),i%2?'155,231,196':'120,210,240',.22*pu);x.fillRect(gx-200,gy-200,400,400)}}
+for(i=0;i<B.length;i++){var q=B[i],bx=((q.x+.04*Math.sin(t*.12*q.q+q.h))*W+(Math.sin(t*.07)*60)*q.d*s),by=((q.y-t*.006*q.d)%1+1)%1*H,R=(14+60*q.d)*s,al=(.10+.12*q.d)*(.6+.4*Math.sin(t*q.q+q.h)),g=x.createRadialGradient(bx,by,R*.55,bx,by,R);g.addColorStop(0,'rgba(215,255,235,'+(al*.4).toFixed(3)+')');g.addColorStop(.8,'rgba(215,255,235,'+al.toFixed(3)+')');g.addColorStop(1,'rgba(215,255,235,0)');x.fillStyle=g;x.beginPath();x.arc(bx,by,R,0,6.283);x.fill()}
+if(CF.t){var vx=W*.5,vy=-.15*H;x.lineCap='round';for(i=0;i<S.length;i++){var q=S[i],u=(t*q.v+q.o)%1,ax=q.x*W,ay=1.08*H,e=Math.pow(u,1.5),hx=ax+(vx-ax)*e,hy=ay+(vy-ay)*e,e2=Math.pow(Math.max(0,u-.14),1.5),tx=ax+(vx-ax)*e2,ty=ay+(vy-ay)*e2;x.strokeStyle='rgba(225,255,242,'+(.55*Math.sin(u*3.1416)).toFixed(3)+')';x.lineWidth=q.w*s*(1.2-u*.6);x.beginPath();x.moveTo(tx,ty);x.lineTo(hx,hy);x.stroke()}}
+var p=(t/CF.s)%1.4-.2,bx2=W*(-.3+1.6*p);
+x.save();x.transform(1,0,-.4,1,0,0);var bg=x.createLinearGradient(bx2-300,0,bx2+300,0);bg.addColorStop(0,'rgba(255,255,255,0)');bg.addColorStop(.5,'rgba(225,255,242,'+CF.a+')');bg.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=bg;x.fillRect(bx2-300,0,600,H);x.restore();
+for(i=0;i<P.length;i++){var q=P[i],yy=((q.y-t*q.v)%1+1)%1,xx=q.x+.02*Math.sin(t*.4+q.h),a=.25+.75*Math.abs(Math.sin(t*q.f+q.h));x.fillStyle='rgba(235,255,245,'+(.6*a).toFixed(3)+')';x.beginPath();x.arc(xx*W,yy*H,q.s*s,0,6.283);x.fill()}
+x.strokeStyle='rgba(255,255,255,.95)';x.lineCap='round';
+for(i=0;i<G.length;i++){var q=G[i],u=((t+q.o)%q.T)/q.T,a=Math.pow(Math.max(0,Math.sin(u*3.1416)),10);if(a<.02)continue;var l=(8+60*a)*s,gx=q.x*W,gy=q.y*H;x.globalAlpha=a;x.lineWidth=2.2*s;x.beginPath();x.moveTo(gx-l,gy);x.lineTo(gx+l,gy);x.moveTo(gx,gy-l);x.lineTo(gx,gy+l);x.stroke()}
+x.globalAlpha=1}
+function lp(n){fr(n/1000);requestAnimationFrame(lp)}
+rs();fr(0);
+if(!(window.matchMedia&amp;&amp;matchMedia('(prefers-reduced-motion: reduce)').matches))requestAnimationFrame(lp);
+var rt;addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){rs();fr(0)},120)});
+})();
+</script><script>addEventListener('message',function(e){var d=e.data;if(d&amp;&amp;d.vh)dispatchEvent(new MouseEvent('mousemove',{clientX:d.x,clientY:d.y}))})</script></body></html>" style="position:absolute;left:0px;top:0px;width:1920px;height:1080px;border:0" title="" scrolling="no"></iframe>
+  <div style="position:absolute; top:0; left:0; width:1920px; height:1080px; display:flex; flex-direction:column; background:linear-gradient(115deg, #2a9fc2bf 0%, #4cc9a08c 45%, #9be7c466 100%); mix-blend-mode:overlay">
+  </div>
+  <div style="position:absolute; top:0; left:0; width:1920px; height:1080px; display:flex; flex-direction:column; background:radial-gradient(ellipse at 56% 38%, #0d7a5700 0%, #0d7a5700 24%, #0d6e5a73 62%, #0a463ab3 100%)">
+  </div>
+  <div style="position:absolute; top:0; left:0; width:1920px; height:1080px; background:linear-gradient(0deg, rgba(8,40,32,0.72) 0%, rgba(8,40,32,0) 38%)"></div>
+  <div style="width:900px; display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:Onest, Arial, sans-serif; font-size:24px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#cff5e3">Целевая аудитория</p>
+    <h2 style="font-family:Onest, Arial, sans-serif; font-size:64px; font-weight:400; line-height:1.15; letter-spacing:-1px; color:#f2fbf6; text-shadow:0 2px 24px #08282059">Молодые горожане с небольшим бюджетом</h2>
+  </div>
+  <div style="display:flex; flex-direction:row; gap:16px">
+    <div style="display:flex; flex-direction:column; gap:14px; flex:1; padding:22px 24px; background:#f2fbf624; border:1px solid #f2fbf659; border-radius:22px; backdrop-filter:blur(16px)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:32px; height:32px; color:#9be7c4;flex:none"><path d="M4 4v16h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></svg>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:26px; line-height:1.25; color:#f2fbf6">Небольшой бюджет</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:14px; flex:1; padding:22px 24px; background:#f2fbf624; border:1px solid #f2fbf659; border-radius:22px; backdrop-filter:blur(16px)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:32px; height:32px; color:#9be7c4;flex:none"><circle cx="12" cy="12" r="9.5"/><path d="M12 6v6l4 2"/></svg>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:26px; line-height:1.25; color:#f2fbf6">Далеко ехать и долго ждать</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:14px; flex:1; padding:22px 24px; background:#f2fbf624; border:1px solid #f2fbf659; border-radius:22px; backdrop-filter:blur(16px)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:32px; height:32px; color:#9be7c4;flex:none"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:26px; line-height:1.25; color:#f2fbf6">Неловко идти к врачу очно</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:14px; flex:1; padding:22px 24px; background:#f2fbf624; border:1px solid #f2fbf659; border-radius:22px; backdrop-filter:blur(16px)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:32px; height:32px; color:#9be7c4;flex:none"><path d="M4 5h16v11H9l-5 4z"/></svg>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:26px; line-height:1.25; color:#f2fbf6">Нужен повторный приём</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:14px; flex:1; padding:22px 24px; background:#f2fbf624; border:1px solid #f2fbf659; border-radius:22px; backdrop-filter:blur(16px)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:32px; height:32px; color:#9be7c4;flex:none"><path d="M2 12h4l3-8 5 16 3-8h5"/></svg>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:26px; line-height:1.25; color:#f2fbf6">Спорт и профилактика</p>
+    </div>
+  </div>
+  <div style="position:absolute;left:128px;top:340px;width:1664px;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="display:flex;flex-direction:row;align-items:baseline;justify-content:center;gap:28px"><p style="font-size:300px;font-weight:500;line-height:1;letter-spacing:-12px;white-space:nowrap;color:#F2FBF6;text-shadow:0px 0px 64px rgba(92,211,166,0.75), 0px 6px 32px rgba(8,40,32,0.45)">18–30</p><p style="font-size:110px;font-weight:500;line-height:1;letter-spacing:-3px;white-space:nowrap;color:#F2FBF6;text-shadow:0px 0px 48px rgba(92,211,166,0.65), 0px 4px 24px rgba(8,40,32,0.45)">лет</p></div><p style="font-size:34px;font-weight:500;line-height:1.3;white-space:nowrap;color:#F2FBF6;background:rgba(8,40,32,0.5);backdrop-filter:blur(12px);border:1px solid rgba(242,251,246,0.4);border-radius:999px;padding:12px 32px">работают и живут в городе</p></div>
+  <p id="e7-clj90j" style="position:absolute; bottom:64px; left:128px; width:400px; font-family:Onest, Arial, sans-serif; font-size:24px; color:#f2fbf6bf">04</p>
+  <p id="e8-clj90j" style="position:absolute; right:128px; bottom:64px; width:1000px; font-family:Onest, Arial, sans-serif; font-size:24px; text-align:right; color:#f2fbf6bf">В перспективе: сотрудники компаний по корпоративным программам</p>
+  
+</section>
+
+<section id="market" data-transition="fade" style="display:flex; flex-direction:column; gap:48px; justify-content:space-between; padding:128px 128px 160px; background:#0f3a30">
+  <video data-src="assets/city.mp4" poster="assets/city.jpg" aria-label="Стеклянные небоскрёбы снизу вверх" muted loop playsinline preload="metadata" style="position:absolute; top:0; left:0; width:1920px; height:1080px; object-fit:cover; filter:brightness(0.9) saturate(0.55);object-fit:cover"></video>
+  <iframe data-srcdoc="<!doctype html><html><head><meta charset=&quot;utf-8&quot;><style>html,body{margin:0;height:100%;overflow:hidden;background:transparent}canvas{position:absolute;left:0;top:0;width:100%;height:100%}</style></head><body><canvas id=&quot;c&quot;></canvas><script>
+(function(){
+var CF={c:[&quot;155,231,196&quot;,&quot;92,200,230&quot;,&quot;210,255,235&quot;],b:&quot;.22&quot;,a:&quot;.26&quot;,s:6,p:40,g:40,k:18,t:70,f:0,au:0,rs:[.27,1.04,.5,.1],ra:0};
+var C=document.getElementById('c'),x=C.getContext('2d'),W=1,H=1,D=1,s=1,i;
+var seed=5;function r(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
+var P=[],G=[],B=[],K=[],S=[];
+for(i=0;i<CF.p;i++)P.push({x:r(),y:r(),s:.8+r()*2.4,v:.008+r()*.02,f:.6+r()*1.6,h:r()*6.28});
+for(i=0;i<CF.g;i++)G.push({x:r(),y:r(),T:3+r()*5,o:r()*9});
+for(i=0;i<CF.k;i++)B.push({x:r(),y:r(),d:.2+r()*.8,h:r()*6.28,q:.3+r()});
+for(i=0;i<9;i++)K.push({y:.04+r()*.8,d:.25+r()*.75,o:r()*1.6,h:r()});
+for(i=0;i<CF.t;i++)S.push({x:r()*1.4-.2,o:r(),v:.1+r()*.16,w:.8+r()*2.4});
+function rs(){W=innerWidth||1920;H=innerHeight||1080;s=H/1080;D=Math.min(devicePixelRatio||1,2);C.width=Math.round(W*D);C.height=Math.round(H*D)}
+function rg(cx,cy,R,c,a,b){var g=x.createRadialGradient(cx,cy,0,cx,cy,R);g.addColorStop(0,'rgba('+c+','+a+')');g.addColorStop(1,'rgba('+c+','+(b||0)+')');return g}
+function fr(t){
+x.setTransform(D,0,0,D,0,0);x.clearRect(0,0,W,H);x.globalCompositeOperation='lighter';x.globalAlpha=1;
+for(var i=0;i<3;i++){var c=CF.c[i],cx=W*(.5+.42*Math.sin(t*.13*(i+1)+i*2.1)),cy=H*(.5+.38*Math.cos(t*.1*(i+2)+i*1.3)),R=H*(.55+.15*Math.sin(t*.23+i));x.fillStyle=rg(cx,cy,R,c,CF.b);x.fillRect(0,0,W,H)}
+if(CF.au){var br=.5+.5*Math.sin(t*.7);x.fillStyle=rg(W*.56,H*.4,H*(.42+.06*br),'210,255,230',.12+.08*br);x.fillRect(0,0,W,H)}
+var sx=CF.rs[0]*W,sy=CF.rs[1]*H,base=Math.atan2(CF.rs[3]*H-sy,CF.rs[2]*W-sx),L=2.8*H;
+for(i=-6;i<=6;i++){var an=base+i*.1+.07*Math.sin(t*.17+i*.7),hw=.03+.022*Math.sin(t*.31+i*1.9),al=Math.max(0,CF.ra*(.55+.45*Math.sin(t*.5+i*1.3)))*(1-Math.abs(i)/8);
+var gr=x.createLinearGradient(sx,sy,sx+Math.cos(an)*L,sy+Math.sin(an)*L);gr.addColorStop(0,'rgba(220,255,238,'+al.toFixed(3)+')');gr.addColorStop(1,'rgba(220,255,238,0)');x.fillStyle=gr;x.beginPath();x.moveTo(sx,sy);x.lineTo(sx+Math.cos(an-hw)*L,sy+Math.sin(an-hw)*L);x.lineTo(sx+Math.cos(an+hw)*L,sy+Math.sin(an+hw)*L);x.closePath();x.fill()}
+for(i=0;i<K.length;i++){var k=K[i],cx=((t*(.008+.02*k.d)+k.o)%1.5-.25)*W,cy=k.y*H+12*s*Math.sin(t*.3+k.h*6),w=W*(.35+.4*k.d);x.save();x.translate(cx,cy);x.scale(1,.2*k.d+.1);x.fillStyle=rg(0,0,w*.5,'225,255,242',.16+.1*k.d);x.fillRect(-w,-w,2*w,2*w);x.restore()}
+if(CF.f){var fx=CF.rs[0]*W,fy=CF.rs[1]*H,pu=.7+.3*Math.sin(t*.9);x.fillStyle=rg(fx,fy,H*.7*pu,'255,244,205',.34);x.fillRect(0,0,W,H);x.strokeStyle='rgba(255,250,225,'+(.22*pu).toFixed(3)+')';x.lineWidth=2.5*s;x.beginPath();for(i=0;i<8;i++){var a2=t*.05+i*.7854;x.moveTo(fx,fy);x.lineTo(fx+Math.cos(a2)*H*.9,fy+Math.sin(a2)*H*.9)}x.stroke();
+for(i=1;i<5;i++){var gx=fx+(W*.5-fx)*i*.34,gy=fy+(H*.5-fy)*i*.34;x.fillStyle=rg(gx,gy,H*(.03+.03*i),i%2?'155,231,196':'120,210,240',.22*pu);x.fillRect(gx-200,gy-200,400,400)}}
+for(i=0;i<B.length;i++){var q=B[i],bx=((q.x+.04*Math.sin(t*.12*q.q+q.h))*W+(Math.sin(t*.07)*60)*q.d*s),by=((q.y-t*.006*q.d)%1+1)%1*H,R=(14+60*q.d)*s,al=(.10+.12*q.d)*(.6+.4*Math.sin(t*q.q+q.h)),g=x.createRadialGradient(bx,by,R*.55,bx,by,R);g.addColorStop(0,'rgba(215,255,235,'+(al*.4).toFixed(3)+')');g.addColorStop(.8,'rgba(215,255,235,'+al.toFixed(3)+')');g.addColorStop(1,'rgba(215,255,235,0)');x.fillStyle=g;x.beginPath();x.arc(bx,by,R,0,6.283);x.fill()}
+if(CF.t){var vx=W*.5,vy=-.15*H;x.lineCap='round';for(i=0;i<S.length;i++){var q=S[i],u=(t*q.v+q.o)%1,ax=q.x*W,ay=1.08*H,e=Math.pow(u,1.5),hx=ax+(vx-ax)*e,hy=ay+(vy-ay)*e,e2=Math.pow(Math.max(0,u-.14),1.5),tx=ax+(vx-ax)*e2,ty=ay+(vy-ay)*e2;x.strokeStyle='rgba(225,255,242,'+(.55*Math.sin(u*3.1416)).toFixed(3)+')';x.lineWidth=q.w*s*(1.2-u*.6);x.beginPath();x.moveTo(tx,ty);x.lineTo(hx,hy);x.stroke()}}
+var p=(t/CF.s)%1.4-.2,bx2=W*(-.3+1.6*p);
+x.save();x.transform(1,0,-.4,1,0,0);var bg=x.createLinearGradient(bx2-300,0,bx2+300,0);bg.addColorStop(0,'rgba(255,255,255,0)');bg.addColorStop(.5,'rgba(225,255,242,'+CF.a+')');bg.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=bg;x.fillRect(bx2-300,0,600,H);x.restore();
+for(i=0;i<P.length;i++){var q=P[i],yy=((q.y-t*q.v)%1+1)%1,xx=q.x+.02*Math.sin(t*.4+q.h),a=.25+.75*Math.abs(Math.sin(t*q.f+q.h));x.fillStyle='rgba(235,255,245,'+(.6*a).toFixed(3)+')';x.beginPath();x.arc(xx*W,yy*H,q.s*s,0,6.283);x.fill()}
+x.strokeStyle='rgba(255,255,255,.95)';x.lineCap='round';
+for(i=0;i<G.length;i++){var q=G[i],u=((t+q.o)%q.T)/q.T,a=Math.pow(Math.max(0,Math.sin(u*3.1416)),10);if(a<.02)continue;var l=(8+60*a)*s,gx=q.x*W,gy=q.y*H;x.globalAlpha=a;x.lineWidth=2.2*s;x.beginPath();x.moveTo(gx-l,gy);x.lineTo(gx+l,gy);x.moveTo(gx,gy-l);x.lineTo(gx,gy+l);x.stroke()}
+x.globalAlpha=1}
+function lp(n){fr(n/1000);requestAnimationFrame(lp)}
+rs();fr(0);
+if(!(window.matchMedia&amp;&amp;matchMedia('(prefers-reduced-motion: reduce)').matches))requestAnimationFrame(lp);
+var rt;addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){rs();fr(0)},120)});
+})();
+</script><script>addEventListener('message',function(e){var d=e.data;if(d&amp;&amp;d.vh)dispatchEvent(new MouseEvent('mousemove',{clientX:d.x,clientY:d.y}))})</script></body></html>" style="position:absolute;left:0px;top:0px;width:1920px;height:1080px;border:0" title="" scrolling="no"></iframe>
+  <div style="position:absolute; top:0; left:0; width:1920px; height:1080px; display:flex; flex-direction:column; background:linear-gradient(115deg, #2a9fc2cc 0%, #4cc9a099 50%, #9be7c473 100%); mix-blend-mode:overlay">
+  </div>
+  <div style="position:absolute; top:0; left:0; width:1920px; height:1080px; display:flex; flex-direction:column; background:linear-gradient(115deg, #0a3e348c 0%, #0d6e5a40 55%, #0a3e3473 100%)">
+  </div>
+  <div style="position:absolute; top:0; left:0; width:1920px; height:1080px; display:flex; flex-direction:column; background:linear-gradient(0deg, #082820c7 0%, #08282000 50%)">
+  </div>
+  <div style="width:1000px; display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:Onest, Arial, sans-serif; font-size:24px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#cff5e3">Рынок</p>
+    <h2 style="font-family:Onest, Arial, sans-serif; font-size:64px; font-weight:400; line-height:1.15; letter-spacing:-1px; color:#f2fbf6; text-shadow:0 2px 24px #08282066">Онлайн-приёмы быстро растут</h2>
+  </div>
+  <div style="display:flex; flex-direction:row; gap:48px">
+    <div style="display:flex; flex-direction:column; gap:10px; flex:1; padding:24px 0 0; border-top:1px solid #f2fbf666">
+      <p style="font-family:Onest, Arial, sans-serif; font-size:200px; font-weight:500; line-height:1; letter-spacing:-8px; white-space:nowrap; color:#f2fbf6; text-shadow:0 0 48px rgba(92,211,166,0.65), 0 4px 24px rgba(8,40,32,0.4)">24</p>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:28px; line-height:1.3; color:#f2fbf6">млн онлайн-консультаций в 2025</p>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:24px; line-height:1.3; color:#f2fbf6b3">в 70 раз больше, чем 10 лет назад</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px; flex:1; padding:24px 0 0; border-top:1px solid #f2fbf666">
+      <p style="font-family:Onest, Arial, sans-serif; font-size:200px; font-weight:500; line-height:1; letter-spacing:-8px; white-space:nowrap; color:#f2fbf6; text-shadow:0 0 48px rgba(92,211,166,0.65), 0 4px 24px rgba(8,40,32,0.4)">15,8</p>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:28px; line-height:1.3; color:#f2fbf6">млрд ₽ выручки клиник от онлайн-приёмов, 2024</p>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:24px; line-height:1.3; color:#f2fbf6b3">втрое больше, чем в 2020 (5,6)</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px; flex:1; padding:24px 0 0; border-top:1px solid #f2fbf666">
+      <p style="font-family:Onest, Arial, sans-serif; font-size:200px; font-weight:500; line-height:1; letter-spacing:-8px; white-space:nowrap; color:#f2fbf6; text-shadow:0 0 48px rgba(92,211,166,0.65), 0 4px 24px rgba(8,40,32,0.4)">3,6</p>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:28px; line-height:1.3; color:#f2fbf6">тыс. вакансий для онлайн-врачей, 2025</p>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:24px; line-height:1.3; color:#f2fbf6b3">в 12 раз больше, чем в 2020 (0,3)</p>
+    </div>
+  </div>
+  <p style="position:absolute; bottom:64px; left:128px; width:400px; font-family:Onest, Arial, sans-serif; font-size:24px; color:#f2fbf6bf">05</p>
+  <p style="position:absolute; right:128px; bottom:64px; width:1100px; font-family:Onest, Arial, sans-serif; font-size:24px; text-align:right; color:#f2fbf6bf">Источники: BusinesStat, Smart Ranking, vbr.ru, finance.mail.ru</p>
+  
+</section>
+
+<section id="competition" data-transition="fade" style="background:#E8EFEA;color:#13241E;font-family:'Onest', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#0D7A57">Конкуренция · 5 сил Портера</p>
+<h2 style="font-size:64px;font-weight:400;line-height:1.15;letter-spacing:-1px">Давление на рынке высокое</h2>
+</div>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:center">
+<div style="width:680px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:220px;font-weight:400;line-height:1;letter-spacing:-8px;white-space:nowrap;background:linear-gradient(120deg, #0D7A57 0%, #2A9FC2 70%, #4CC9A0 100%);background-clip:text;-webkit-text-fill-color:transparent">13<span style="color:#889892;-webkit-text-fill-color:currentcolor">/15</span></p>
+<p style="font-size:28px;line-height:1.4;color:#3F4F48">Нужен узкий сегмент и заметное отличие от лидеров</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;background:#FBFCFA;border-radius:32px;padding:16px 40px">
+<div style="display:flex;flex-direction:row;align-items:center;gap:32px;padding:22px 0;border-bottom:1px solid #E1E9E3">
+<p style="flex:1;font-size:28px">Соперничество</p>
+<div style="display:flex;flex-direction:row;gap:10px"><div style="width:24px;height:24px;border-radius:999px;background:#0D7A57"></div><div style="width:24px;height:24px;border-radius:999px;background:#0D7A57"></div><div style="width:24px;height:24px;border-radius:999px;background:#0D7A57"></div></div>
+<p style="width:150px;font-size:24px;color:#5B6B64;text-align:right">сильное</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:32px;padding:22px 0;border-bottom:1px solid #E1E9E3">
+<p style="flex:1;font-size:28px">Врачи и клиники</p>
+<div style="display:flex;flex-direction:row;gap:10px"><div style="width:24px;height:24px;border-radius:999px;background:#0D7A57"></div><div style="width:24px;height:24px;border-radius:999px;background:#0D7A57"></div><div style="width:24px;height:24px;border-radius:999px;background:#0D7A57"></div></div>
+<p style="width:150px;font-size:24px;color:#5B6B64;text-align:right">сильное</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:32px;padding:22px 0;border-bottom:1px solid #E1E9E3">
+<p style="flex:1;font-size:28px">Заменители</p>
+<div style="display:flex;flex-direction:row;gap:10px"><div style="width:24px;height:24px;border-radius:999px;background:#0D7A57"></div><div style="width:24px;height:24px;border-radius:999px;background:#0D7A57"></div><div style="width:24px;height:24px;border-radius:999px;background:#0D7A57"></div></div>
+<p style="width:150px;font-size:24px;color:#5B6B64;text-align:right">сильное</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:32px;padding:22px 0;border-bottom:1px solid #E1E9E3">
+<p style="flex:1;font-size:28px">Новые игроки</p>
+<div style="display:flex;flex-direction:row;gap:10px"><div style="width:24px;height:24px;border-radius:999px;background:#0D7A57"></div><div style="width:24px;height:24px;border-radius:999px;background:#0D7A57"></div><div style="width:24px;height:24px;border-radius:999px;border:2px solid #B9C8C0"></div></div>
+<p style="width:150px;font-size:24px;color:#5B6B64;text-align:right">среднее</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:32px;padding:22px 0">
+<p style="flex:1;font-size:28px">Пациенты</p>
+<div style="display:flex;flex-direction:row;gap:10px"><div style="width:24px;height:24px;border-radius:999px;background:#0D7A57"></div><div style="width:24px;height:24px;border-radius:999px;background:#0D7A57"></div><div style="width:24px;height:24px;border-radius:999px;border:2px solid #B9C8C0"></div></div>
+<p style="width:150px;font-size:24px;color:#5B6B64;text-align:right">среднее</p>
+</div>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:400px;font-size:24px;color:#5B6B64">06</p>
+<p style="position:absolute;right:128px;bottom:64px;width:1200px;font-size:24px;color:#5B6B64;text-align:right">Лидеры: СберЗдоровье, Яндекс Здоровье, ПроДокторов, Медси</p>
+
+</section>
+
+<section id="map" data-transition="fade" style="background:#F2F5F1;color:#13241E;font-family:'Onest', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<svg aria-label="Точечная сетка" width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" style="position:absolute;left:0;top:0;width:1920px;height:1080px"><defs><pattern id="pd" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="2" fill="#D3DED7"/></pattern><radialGradient id="pglow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#5CD3A6" stop-opacity="0.55"/><stop offset="0.6" stop-color="#2A9FC2" stop-opacity="0.15"/><stop offset="1" stop-color="#2A9FC2" stop-opacity="0"/></radialGradient></defs><rect width="1920" height="1080" fill="#F2F5F1"/><rect width="1920" height="1080" fill="url(#pd)"/><ellipse cx="1020" cy="572" rx="300" ry="190" fill="url(#pglow)"/></svg>
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#0D7A57">Карта стратегических групп</p>
+<h2 style="font-size:64px;font-weight:400;line-height:1.15;letter-spacing:-1px">Наша ниша пока свободна</h2>
+</div>
+<svg style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;color:#889892"><defs><marker id="ah2" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs><line x1="160" y1="860" x2="160" y2="300" stroke="currentColor" stroke-width="2" marker-end="url(#ah2)"/></svg>
+<svg style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;color:#889892"><defs><marker id="ah3" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs><line x1="160" y1="860" x2="1220" y2="860" stroke="currentColor" stroke-width="2" marker-end="url(#ah3)"/></svg>
+<p style="position:absolute;left:184px;top:292px;width:400px;font-size:24px;color:#5B6B64">↑ Ресурсы и бренд</p>
+<p style="position:absolute;left:184px;top:872px;width:300px;font-size:24px;color:#5B6B64">Врач на всё</p>
+<p style="position:absolute;left:880px;top:872px;width:340px;font-size:24px;color:#5B6B64;text-align:right">Узкая аудитория →</p>
+<p style="position:absolute;left:220px;top:340px;width:360px;font-size:24px;line-height:1.4;background:#FBFCFA;border:1px solid #DCE6DF;border-radius:20px;padding:18px 26px"><b>Экосистемы</b><br>СберЗдоровье, Яндекс</p>
+<p style="position:absolute;left:680px;top:340px;width:340px;font-size:24px;line-height:1.4;color:#3F4F48;border:2px dashed #889892;border-radius:20px;padding:18px 26px"><b>ИИ-помощники</b><br>заменитель врача</p>
+<p style="position:absolute;left:270px;top:490px;width:320px;font-size:24px;line-height:1.4;background:#FBFCFA;border:1px solid #DCE6DF;border-radius:20px;padding:18px 26px"><b>Сети клиник</b><br>Медси и другие</p>
+<p style="position:absolute;left:330px;top:640px;width:340px;font-size:24px;line-height:1.4;background:#FBFCFA;border:1px solid #DCE6DF;border-radius:20px;padding:18px 26px"><b>Агрегаторы</b><br>ПроДокторов</p>
+<p style="position:absolute;left:840px;top:520px;width:360px;font-size:24px;line-height:1.4;color:#F2F5F1;background:#13241E;border-radius:20px;padding:18px 26px;box-shadow:0px 16px 48px rgba(13,122,87,0.35)"><b>VitalHealth</b><br>18–30, ЗОЖ, профилактика</p>
+<p style="position:absolute;left:820px;top:700px;width:380px;font-size:24px;line-height:1.4;background:#FBFCFA;border:1px solid #DCE6DF;border-radius:20px;padding:18px 26px"><b>Узкие сервисы</b><br>психологи, педиатры</p>
+<div style="position:absolute;left:1320px;top:340px;width:472px;display:flex;flex-direction:column;gap:24px">
+<h3 style="font-size:44px;font-weight:500;line-height:1.2">Молодёжь и здоровый образ жизни</h3>
+<p style="font-size:28px;line-height:1.4;color:#3F4F48">Крупные игроки работают на всех сразу. Сильного сервиса для 18–30 пока нет.</p>
+<p style="font-size:24px;font-weight:500;color:#0D7A57">Спрос проверим опросом</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:400px;font-size:24px;color:#5B6B64">07</p>
+
+</section>
+
+<section id="ocean" data-transition="fade" style="display:flex; flex-direction:column; gap:56px; justify-content:space-between; padding:128px 128px 160px; background:#f2f5f1">
+  <svg xmlns="http://www.w3.org/2000/svg" aria-label="Горизонтальная стеклянная лента" viewBox="0 0 1920 1080" style="position:absolute; top:0; left:0; width:1920px; height:1080px"><defs><linearGradient id="og" gradientUnits="userSpaceOnUse" x1="0" y1="700" x2="1920" y2="500"><stop offset="0" stop-color="#F2F5F1"/><stop offset="0.3" stop-color="#5CD3A6"/><stop offset="0.6" stop-color="#2A9FC2"/><stop offset="0.85" stop-color="#B9F08C"/><stop offset="1" stop-color="#F2F5F1"/></linearGradient><filter id="ob1" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="40"/></filter></defs><path d="M-100 820 C400 560 800 860 1200 620 C1500 450 1700 520 2020 380" fill="none" stroke="url(#og)" stroke-width="260" stroke-linecap="round" opacity="0.4" filter="url(#ob1)"/></svg>
+  <div style="display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:Onest, Arial, sans-serif; font-size:24px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#0d7a57">Стратегия голубого океана</p>
+    <h2 style="font-family:Onest, Arial, sans-serif; font-size:64px; font-weight:400; line-height:1.15; letter-spacing:-1px; color:#13241e">Что мы меняем для пациента</h2>
+  </div>
+  <div style="display:flex; flex-direction:row; gap:24px">
+    <div style="display:flex; flex-direction:column; gap:28px; flex:1; padding:36px; background:#fbfcfad9; border:1px solid #ffffff; border-radius:28px; backdrop-filter:blur(16px)">
+      <p style="font-family:Onest, Arial, sans-serif; font-size:24px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#0d7a57">Убираем</p>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:30px; line-height:1.3; color:#13241e">Поездки и очереди на повторные визиты</p>
+      <div style="height:1px; flex:0 0 auto; background:#dce6df"></div>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:30px; line-height:1.3; color:#13241e">Поиск врача по десяткам сайтов</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:28px; flex:1; padding:36px; background:#fbfcfad9; border:1px solid #ffffff; border-radius:28px; backdrop-filter:blur(16px)">
+      <p style="font-family:Onest, Arial, sans-serif; font-size:24px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#0d7a57">Снижаем</p>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:30px; line-height:1.3; color:#13241e">Цену приёма для молодых</p>
+      <div style="height:1px; flex:0 0 auto; background:#dce6df"></div>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:30px; line-height:1.3; color:#13241e">Время до записи</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:28px; flex:1; padding:36px; background:#fbfcfad9; border:1px solid #ffffff; border-radius:28px; backdrop-filter:blur(16px)">
+      <p style="font-family:Onest, Arial, sans-serif; font-size:24px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#0d7a57">Усиливаем</p>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:30px; line-height:1.3; color:#13241e">Объяснения простым языком</p>
+      <div style="height:1px; flex:0 0 auto; background:#dce6df"></div>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:30px; line-height:1.3; color:#13241e">Доверие: проверка врачей и лицензия на виду</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:28px; flex:1; padding:36px; background:#13241e; border-radius:28px; box-shadow:0 24px 64px #0d7a5740">
+      <p style="font-family:Onest, Arial, sans-serif; font-size:24px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#9be7c4">Создаём</p>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:30px; line-height:1.3; color:#eef5f0">Врач по ЗОЖ: спорт, сон, питание</p>
+      <div style="height:1px; flex:0 0 auto; background:#2f4a40"></div>
+      <p style="font-family:Onest, Arial, sans-serif; font-size:30px; line-height:1.3; color:#eef5f0">Подписка на наблюдение</p>
+    </div>
+  </div>
+  <p style="position:absolute; bottom:64px; left:128px; width:400px; font-family:Onest, Arial, sans-serif; font-size:24px; color:#5b6b64">08</p>
+  
+  
+</section>
+
+<section id="model" data-transition="fade" style="background:#E8EFEA;color:#13241E;font-family:'Onest', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#0D7A57">Бизнес-модель</p>
+<h2 style="font-size:64px;font-weight:400;line-height:1.15;letter-spacing:-1px">Как зарабатываем</h2>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:24px">
+<div style="display:flex;flex-direction:row;align-items:center;gap:16px;background:#FBFCFA;border-radius:999px;padding:22px 40px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#0D7A57;width:36px;height:36px;flex:none"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.7 0 4.5 1.8 4.5 4.5"/></svg><p style="font-size:32px">Пациент</p></div>
+<svg width="140" height="20" viewBox="0 0 140 20" style="flex:none;color:#889892"><defs><marker id="ah4" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs><line x1="4" y1="10" x2="136" y2="10" stroke="currentColor" stroke-width="2" marker-start="url(#ah4)" marker-end="url(#ah4)"/></svg>
+<div style="display:flex;flex-direction:row;align-items:center;gap:16px;background:#13241E;color:#EEF5F0;border-radius:999px;padding:22px 40px;box-shadow:0px 16px 48px rgba(13,122,87,0.3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#9BE7C4;width:36px;height:36px;flex:none"><path d="M2 12h4l3-8 5 16 3-8h5"/></svg><p style="font-size:32px;font-weight:500">VitalHealth</p></div>
+<svg width="140" height="20" viewBox="0 0 140 20" style="flex:none;color:#889892"><defs><marker id="ah5" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs><line x1="4" y1="10" x2="136" y2="10" stroke="currentColor" stroke-width="2" marker-start="url(#ah5)" marker-end="url(#ah5)"/></svg>
+<div style="display:flex;flex-direction:row;align-items:center;gap:16px;background:#FBFCFA;border-radius:999px;padding:22px 40px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#0D7A57;width:36px;height:36px;flex:none"><path d="M12 2l2.6 2 3.2-.3 1 3 2.7 1.8-1 3.1 1 3.1-2.7 1.8-1 3-3.2-.3L12 22l-2.6-2-3.2.3-1-3-2.7-1.8 1-3.1-1-3.1 2.7-1.8 1-3 3.2.3z"/><path d="M8.5 12.2l2.5 2.5 4.5-5"/></svg><p style="font-size:32px">Клиника-партнёр</p></div>
+</div>
+<div style="display:flex;flex-direction:row;gap:32px;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FBFCFA;border-radius:28px;padding:40px">
+<p style="font-size:24px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#0D7A57">Сейчас</p>
+<h3 style="font-size:40px;font-weight:500;line-height:1.2">Комиссия с каждого приёма</h3>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FBFCFA;border-radius:28px;padding:40px">
+<p style="font-size:24px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#0D7A57">Регулярно</p>
+<h3 style="font-size:40px;font-weight:500;line-height:1.2">Подписка на наблюдение</h3>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:rgba(251,252,250,0.5);border:2px dashed #B9C8C0;border-radius:28px;padding:40px">
+<p style="font-size:24px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#5B6B64">В перспективе</p>
+<h3 style="font-size:40px;font-weight:500;line-height:1.2">Программы для компаний и страховых</h3>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:400px;font-size:24px;color:#5B6B64">09</p>
+<p style="position:absolute;right:128px;bottom:64px;width:1200px;font-size:24px;color:#5B6B64;text-align:right">Партнёры: клиники с лицензией, лаборатории, вузы и спортклубы</p>
+
+</section>
+
+
+</div>
+<div id="bar"><button id="pv" aria-label="Назад">←</button><span id="cnt"></span><button id="nx" aria-label="Вперёд">→</button><button id="fs" aria-label="На весь экран">⛶</button></div>
+<script>
+(function(){
+var st=document.getElementById("stage"),sl=[].slice.call(st.querySelectorAll('section')),cur=-1,sc=1,ox=0,oy=0,cnt=document.getElementById('cnt'),it;
+[].forEach.call(sl,function(s){var seen=false;[].forEach.call(s.children,function(c){if(!seen&&getComputedStyle(c).position==="absolute"){c.style.zIndex="-1"}else seen=true})});
+function fit(){var w=innerWidth,h=innerHeight;sc=Math.min(w/1920,h/1080);ox=(w-1920*sc)/2;oy=(h-1080*sc)/2;st.style.transform='translate('+ox+'px,'+oy+'px) scale('+sc+')'}
+function act(i,on){var s=sl[i];[].forEach.call(s.querySelectorAll('iframe'),function(f){if(on){if(!f.getAttribute('srcdoc'))f.srcdoc=f.getAttribute('data-srcdoc')}else f.removeAttribute('srcdoc')});[].forEach.call(s.querySelectorAll('video'),function(v){if(on){if(!v.getAttribute('src'))v.src=v.getAttribute('data-src');var p=v.play();if(p&&p.catch)p.catch(function(){})}else v.pause()})}
+function go(i){i=Math.max(0,Math.min(sl.length-1,i));if(i===cur)return;var pv=cur;cur=i;sl.forEach(function(s,k){s.classList.toggle('on',k===i)});act(i,true);if(pv>=0)setTimeout(function(){if(cur!==pv)act(pv,false)},650);cnt.textContent=(i+1)+' / '+sl.length;try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
+function wake(){document.body.classList.remove('idle');clearTimeout(it);it=setTimeout(function(){document.body.classList.add('idle')},2600)}
+document.addEventListener('mousemove',function(e){wake();if(cur<0)return;var x=(e.clientX-ox)/sc,y=(e.clientY-oy)/sc;[].forEach.call(sl[cur].querySelectorAll('iframe'),function(f){try{f.contentWindow.postMessage({vh:1,x:x,y:y},'*')}catch(_){}})});
+document.addEventListener('keydown',function(e){wake();var k=e.key;if(k==='ArrowRight'||k==='PageDown'||k===' '||k==='Enter'){e.preventDefault();go(cur+1)}else if(k==='ArrowLeft'||k==='PageUp'||k==='Backspace'){e.preventDefault();go(cur-1)}else if(k==='Home')go(0);else if(k==='End')go(sl.length-1);else if(k==='f'||k==='F')fs()});
+function fs(){var d=document;if(d.fullscreenElement){d.exitFullscreen()}else if(d.documentElement.requestFullscreen){d.documentElement.requestFullscreen()}}
+document.getElementById('pv').onclick=function(){go(cur-1)};document.getElementById('nx').onclick=function(){go(cur+1)};document.getElementById('fs').onclick=fs;
+var tx=0;document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});document.addEventListener('touchend',function(e){var d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50)go(cur+(d<0?1:-1))},{passive:true});
+addEventListener('resize',fit);addEventListener('hashchange',function(){go((parseInt(location.hash.slice(1),10)||1)-1)});
+fit();go((parseInt(location.hash.slice(1),10)||1)-1);wake();
+})();
+</script>
+</body>
+</html>
